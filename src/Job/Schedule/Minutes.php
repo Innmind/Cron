@@ -41,7 +41,9 @@ final class Minutes
         // stepped
         if ($value->contains('/')) {
             [$minutes, $step] = $value->split('/');
-            $minutes = self::of((string) $minutes);
+
+            // validate $minutes format
+            self::of((string) $minutes);
 
             if ($step->matches('~^[0-5]?[0-9]$~')) {
                 return new self((string) $value);
