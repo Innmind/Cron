@@ -22,14 +22,6 @@ class MinutesTest extends TestCase
         $this->assertSame('*', (string) $schedule);
     }
 
-    public function testEverySecond()
-    {
-        $schedule = Minutes::everySecond();
-
-        $this->assertInstanceOf(Minutes::class, $schedule);
-        $this->assertSame('*/60', (string) $schedule);
-    }
-
     public function testEachMinuteFromRawString()
     {
         $schedule = Minutes::of('*');

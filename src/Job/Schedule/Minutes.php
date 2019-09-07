@@ -58,11 +58,6 @@ final class Minutes
         return new self('*');
     }
 
-    public static function everySecond(): self
-    {
-        return new self('*/60');
-    }
-
     public function __toString(): string
     {
         return $this->value;
