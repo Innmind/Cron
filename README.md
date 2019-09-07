@@ -62,6 +62,7 @@ use Innmind\Cron\{
     Job,
 };
 use Innmind\OperatingSystem\Factory;
+use Innmind\Url\Url;
 
 $os = Factory::build();
 $install = Crontab::forUser(
