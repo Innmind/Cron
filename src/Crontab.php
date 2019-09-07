@@ -16,9 +16,15 @@ final class Crontab
 
     private function __construct(Command $command, Job ...$jobs)
     {
-        $this->command = Command::foreground('echo')
-            ->withArgument((string) Sequence::of(...$jobs)->join("\n"))
-            ->pipe($command);
+        $jobs = Sequence::of(...$jobs);
+
+        if ($jobs->empty()) {
+            $this->command = $command->withShortOption('r');
+        } else {
+            $this->command = Command::foreground('echo')
+                ->withArgument((string) $jobs->join("\n"))
+                ->pipe($command);
+            }
     }
 
     public static function forConnectedUser(Job ...$jobs): self

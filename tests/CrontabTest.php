@@ -30,7 +30,7 @@ class CrontabTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function($command) {
-                return (string) $command === "echo '' | 'crontab'";
+                return (string) $command === "crontab '-r'";
             }))
             ->willReturn($process = $this->createMock(Process::class));
         $process
@@ -57,7 +57,7 @@ class CrontabTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function($command) {
-                return (string) $command === "echo '' | 'crontab' '-u' 'admin'";
+                return (string) $command === "crontab '-u' 'admin' '-r'";
             }))
             ->willReturn($process = $this->createMock(Process::class));
         $process
