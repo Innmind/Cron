@@ -13,7 +13,6 @@ use Innmind\Immutable\Sequence;
 final class Crontab
 {
     private $command;
-    private $jobs;
 
     private function __construct(Command $command, Job ...$jobs)
     {
