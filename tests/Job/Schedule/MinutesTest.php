@@ -3,7 +3,10 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Cron\Job\Schedule;
 
-use Innmind\Cron\Job\Schedule\Minutes;
+use Innmind\Cron\{
+    Job\Schedule\Minutes,
+    Exception\DomainException
+};
 use PHPUnit\Framework\TestCase;
 use Eris\{
     Generator,
@@ -102,6 +105,18 @@ class MinutesTest extends TestCase
 
                 $this->assertInstanceOf(Minutes::class, $schedule);
                 $this->assertSame("$from-$to/$step", (string) $schedule);
+            });
+    }
+
+    public function testThrowExceptionWhenUsingRandomString()
+    {
+        $this
+            ->forAll(Generator\string())
+            ->then(function($value) {
+                $this->expectException(DomainException::class);
+                $this->expectExceptionMessage($value);
+
+                Minutes::of($value);
             });
     }
 }
