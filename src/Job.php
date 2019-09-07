@@ -5,7 +5,7 @@ namespace Innmind\Cron;
 
 use Innmind\Cron\{
     Job\Schedule,
-    Exception\DomainException
+    Exception\DomainException,
 };
 use Innmind\Server\Control\Server\Command;
 use Innmind\Immutable\Str;

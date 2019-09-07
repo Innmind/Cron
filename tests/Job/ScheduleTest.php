@@ -5,7 +5,7 @@ namespace Tests\Innmind\Cron\Job;
 
 use Innmind\Cron\{
     Job\Schedule,
-    Exception\DomainException
+    Exception\DomainException,
 };
 use PHPUnit\Framework\TestCase;
 use Eris\{

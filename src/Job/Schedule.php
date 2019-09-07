@@ -9,7 +9,7 @@ use Innmind\Cron\{
     Job\Schedule\DaysOfMonth,
     Job\Schedule\Months,
     Job\Schedule\DaysOfWeek,
-    Exception\DomainException
+    Exception\DomainException,
 };
 use Innmind\Immutable\Str;
 

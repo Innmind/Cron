@@ -6,7 +6,7 @@ namespace Tests\Innmind\Cron;
 use Innmind\Cron\{
     Job,
     Job\Schedule,
-    Exception\DomainException
+    Exception\DomainException,
 };
 use Innmind\Server\Control\Server\Command;
 use PHPUnit\Framework\TestCase;
