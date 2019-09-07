@@ -40,10 +40,10 @@ final class Hours
 
         // stepped
         if ($value->contains('/')) {
-            [$minutes, $step] = $value->split('/');
+            [$hours, $step] = $value->split('/');
 
-            // validate $minutes format
-            self::of((string) $minutes);
+            // validate $hours format
+            self::of((string) $hours);
 
             if ($step->matches('~^([01]?[0-9]|2[0-3])$~')) {
                 return new self((string) $value);
