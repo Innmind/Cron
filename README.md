@@ -29,7 +29,7 @@ use Innmind\OperatingSystem\Factory;
 $os = Factory::build();
 $install = Crontab::forConnectedUser(
     Job::of('* * * * * say hello'),
-    Job::of('*/2 * * * * say world')
+    Job::of('*/2 * * * * say world'),
 );
 $install($os->control());
 // this is the same as running "echo '* * * * * say hello' | crontab" in your terminal
@@ -47,7 +47,7 @@ use Innmind\OperatingSystem\Factory;
 $os = Factory::build();
 $install = Crontab::forUser(
     'watev',
-    Job::of('* * * * * say hello')
+    Job::of('* * * * * say hello'),
 );
 $install($os->control());
 // this is the same as running "echo '* * * * * say hello' | crontab -u admin" in your terminal
@@ -66,10 +66,10 @@ use Innmind\Url\Url;
 $os = Factory::build();
 $install = Crontab::forUser(
     'watev',
-    Job::of('* * * * * say hello')
+    Job::of('* * * * * say hello'),
 );
 $install(
-    $os->remote()->ssh(Url::fromString('ssh://example.com'))
+    $os->remote()->ssh(Url::of('ssh://example.com')),
 );
 ```
 
