@@ -9,6 +9,7 @@ use Innmind\Cron\{
 };
 use Innmind\Server\Control\Server\Command;
 use Innmind\Immutable\Str;
+use function Innmind\Immutable\join;
 
 final class Job
 {
@@ -23,7 +24,12 @@ final class Job
 
     public static function of(string $value): self
     {
-        $parts = Str::of($value)->split(' ');
+        $parts = Str::of($value)
+            ->split(' ')
+            ->mapTo(
+                'string',
+                static fn(Str $part): string => $part->toString(),
+            );
 
         if ($parts->size() < 6) {
             throw new DomainException($value);
@@ -31,8 +37,8 @@ final class Job
 
         try {
             return new self(
-                Schedule::of((string) $parts->take(5)->join(' ')),
-                Command::foreground((string) $parts->drop(5)->join(' '))
+                Schedule::of(join(' ', $parts->take(5))->toString()),
+                Command::foreground(join(' ', $parts->drop(5))->toString()),
             );
         } catch (DomainException $e) {
             throw new DomainException($value);
@@ -49,10 +55,10 @@ final class Job
         );
 
         if ($this->command->hasWorkingDirectory()) {
-            $command .= 'cd '.$this->command->workingDirectory().' && ';
+            $command .= 'cd '.$this->command->workingDirectory()->toString().' && ';
         }
 
-        $command .= $this->command;
+        $command .= $this->command->toString();
 
         return "$this->schedule $command";
     }

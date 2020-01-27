@@ -9,6 +9,7 @@ use Innmind\Server\Control\{
     Server\Script,
 };
 use Innmind\Immutable\Sequence;
+use function Innmind\Immutable\join;
 
 final class Crontab
 {
@@ -16,13 +17,16 @@ final class Crontab
 
     private function __construct(Command $command, Job ...$jobs)
     {
-        $jobs = Sequence::of(...$jobs);
+        $jobs = Sequence::of(Job::class, ...$jobs)->mapTo(
+            'string',
+            static fn(Job $job): string => (string) $job,
+        );
 
         if ($jobs->empty()) {
             $this->command = $command->withShortOption('r');
         } else {
             $this->command = Command::foreground('echo')
-                ->withArgument((string) $jobs->join("\n"))
+                ->withArgument(join("\n", $jobs)->toString())
                 ->pipe($command);
             }
     }

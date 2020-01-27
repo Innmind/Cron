@@ -16,7 +16,7 @@ use Innmind\Server\Control\{
     Server\Process\ExitCode,
     Server\Process\Output,
 };
-use Innmind\Immutable\StreamInterface;
+use Innmind\Immutable\Sequence;
 use PHPUnit\Framework\TestCase;
 
 class ReadTest extends TestCase
@@ -33,13 +33,12 @@ class ReadTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function($command) {
-                return (string) $command === "crontab '-l'";
+                return $command->toString() === "crontab '-l'";
             }))
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait')
-            ->will($this->returnSelf());
+            ->method('wait');
         $process
             ->expects($this->once())
             ->method('exitCode')
@@ -51,8 +50,8 @@ class ReadTest extends TestCase
 
         $jobs = $read($server);
 
-        $this->assertInstanceOf(StreamInterface::class, $jobs);
-        $this->assertSame(Job::class, (string) $jobs->type());
+        $this->assertInstanceOf(Sequence::class, $jobs);
+        $this->assertSame(Job::class, $jobs->type());
         $this->assertCount(2, $jobs);
         $this->assertSame('1 2 3 4 5 echo foo', (string) $jobs->first());
         $this->assertSame('2 3 4 5 6 echo bar', (string) $jobs->last());
@@ -70,13 +69,12 @@ class ReadTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function($command) {
-                return (string) $command === "crontab '-u' 'admin' '-l'";
+                return $command->toString() === "crontab '-u' 'admin' '-l'";
             }))
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait')
-            ->will($this->returnSelf());
+            ->method('wait');
         $process
             ->expects($this->once())
             ->method('exitCode')
@@ -88,8 +86,8 @@ class ReadTest extends TestCase
 
         $jobs = $read($server);
 
-        $this->assertInstanceOf(StreamInterface::class, $jobs);
-        $this->assertSame(Job::class, (string) $jobs->type());
+        $this->assertInstanceOf(Sequence::class, $jobs);
+        $this->assertSame(Job::class, $jobs->type());
         $this->assertCount(2, $jobs);
         $this->assertSame('1 2 3 4 5 echo foo', (string) $jobs->first());
         $this->assertSame('2 3 4 5 6 echo bar', (string) $jobs->last());
@@ -109,8 +107,7 @@ class ReadTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait')
-            ->will($this->returnSelf());
+            ->method('wait');
         $process
             ->expects($this->once())
             ->method('exitCode')
@@ -133,13 +130,12 @@ class ReadTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function($command) {
-                return (string) $command === "crontab '-u' 'admin' '-l'";
+                return $command->toString() === "crontab '-u' 'admin' '-l'";
             }))
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait')
-            ->will($this->returnSelf());
+            ->method('wait');
         $process
             ->expects($this->once())
             ->method('exitCode')
@@ -150,7 +146,7 @@ class ReadTest extends TestCase
             ->willReturn($output = $this->createMock(Output::class));
         $output
             ->expects($this->once())
-            ->method('__toString')
+            ->method('toString')
             ->willReturn('*');
 
         $this->expectException(DomainException::class);
@@ -173,7 +169,7 @@ CRONTAB;
         $output = $this->createMock(Output::class);
         $output
             ->expects($this->once())
-            ->method('__toString')
+            ->method('toString')
             ->willReturn($crontab);
 
         return $output;

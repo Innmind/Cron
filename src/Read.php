@@ -9,8 +9,7 @@ use Innmind\Server\Control\{
     Server\Command,
 };
 use Innmind\Immutable\{
-    StreamInterface,
-    Stream,
+    Sequence,
     Str,
 };
 
@@ -41,29 +40,25 @@ final class Read
     }
 
     /**
-     * @return StreamInterface<Job>
+     * @return Sequence<Job>
      */
-    public function __invoke(Server $server): StreamInterface
+    public function __invoke(Server $server): Sequence
     {
-        $process = $server
-            ->processes()
-            ->execute($this->command)
-            ->wait();
+        $process = $server->processes()->execute($this->command);
+        $process->wait();
 
         if (!$process->exitCode()->isSuccessful()) {
             throw new UnableToReadCrontab;
         }
 
-        return Str::of((string) $process->output())
+        return Str::of($process->output()->toString())
             ->split("\n")
             ->filter(static function(Str $line): bool {
                 return !$line->startsWith('#') && !$line->trim()->empty();
             })
-            ->reduce(
-                Stream::of(Job::class),
-                static function(StreamInterface $jobs, Str $line): StreamInterface {
-                    return $jobs->add(Job::of((string) $line));
-                }
+            ->mapTo(
+                Job::class,
+                static fn(Str $line): Job => Job::of($line->toString()),
             );
     }
 }

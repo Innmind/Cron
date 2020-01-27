@@ -5,6 +5,7 @@ namespace Innmind\Cron\Job\Schedule;
 
 use Innmind\Cron\Exception\DomainException;
 use Innmind\Immutable\Str;
+use function Innmind\Immutable\unwrap;
 
 final class Range
 {
@@ -43,16 +44,16 @@ final class Range
 
         // stepped
         if ($value->contains('/')) {
-            [$hours, $step] = $value->split('/');
+            [$hours, $step] = unwrap($value->split('/'));
 
             // validate $hours format
-            $this((string) $hours);
+            $this($hours->toString());
 
             if ($step->matches("~^{$this->pattern}$~")) {
                 return;
             }
         }
 
-        throw new DomainException((string) $value);
+        throw new DomainException($value->toString());
     }
 }

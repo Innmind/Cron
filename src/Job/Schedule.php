@@ -45,11 +45,11 @@ final class Schedule
 
         try {
             return new self(
-                Minutes::of((string) $parts->get(0)),
-                Hours::of((string) $parts->get(1)),
-                DaysOfMonth::of((string) $parts->get(2)),
-                Months::of((string) $parts->get(3)),
-                DaysOfWeek::of((string) $parts->get(4))
+                Minutes::of($parts->get(0)->toString()),
+                Hours::of($parts->get(1)->toString()),
+                DaysOfMonth::of($parts->get(2)->toString()),
+                Months::of($parts->get(3)->toString()),
+                DaysOfWeek::of($parts->get(4)->toString())
             );
         } catch (DomainException $e) {
             throw new DomainException($value);

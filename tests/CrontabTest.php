@@ -30,13 +30,12 @@ class CrontabTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function($command) {
-                return (string) $command === "crontab '-r'";
+                return $command->toString() === "crontab '-r'";
             }))
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait')
-            ->will($this->returnSelf());
+            ->method('wait');
         $process
             ->expects($this->once())
             ->method('exitCode')
@@ -57,13 +56,12 @@ class CrontabTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function($command) {
-                return (string) $command === "crontab '-u' 'admin' '-r'";
+                return $command->toString() === "crontab '-u' 'admin' '-r'";
             }))
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait')
-            ->will($this->returnSelf());
+            ->method('wait');
         $process
             ->expects($this->once())
             ->method('exitCode')
@@ -87,13 +85,12 @@ class CrontabTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function($command) {
-                return (string) $command === "echo '1 2 3 4 5 echo foo\n2 3 4 5 6 echo bar' | 'crontab'";
+                return $command->toString() === "echo '1 2 3 4 5 echo foo\n2 3 4 5 6 echo bar' | 'crontab'";
             }))
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait')
-            ->will($this->returnSelf());
+            ->method('wait');
         $process
             ->expects($this->once())
             ->method('exitCode')
@@ -118,13 +115,12 @@ class CrontabTest extends TestCase
             ->expects($this->once())
             ->method('execute')
             ->with($this->callback(static function($command) {
-                return (string) $command === "echo '1 2 3 4 5 echo foo\n2 3 4 5 6 echo bar' | 'crontab' '-u' 'admin'";
+                return $command->toString() === "echo '1 2 3 4 5 echo foo\n2 3 4 5 6 echo bar' | 'crontab' '-u' 'admin'";
             }))
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait')
-            ->will($this->returnSelf());
+            ->method('wait');
         $process
             ->expects($this->once())
             ->method('exitCode')
@@ -151,8 +147,7 @@ class CrontabTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait')
-            ->will($this->returnSelf());
+            ->method('wait');
         $process
             ->expects($this->any())
             ->method('exitCode')
