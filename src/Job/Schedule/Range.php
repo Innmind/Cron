@@ -8,7 +8,7 @@ use Innmind\Immutable\Str;
 
 final class Range
 {
-    private $pattern;
+    private string $pattern;
 
     public function __construct(string $pattern)
     {

@@ -5,7 +5,7 @@ namespace Innmind\Cron\Job\Schedule;
 
 final class DaysOfMonth
 {
-    private $value;
+    private string $value;
 
     private function __construct(string $value)
     {

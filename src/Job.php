@@ -12,8 +12,8 @@ use Innmind\Immutable\Str;
 
 final class Job
 {
-    private $schedule;
-    private $command;
+    private Schedule $schedule;
+    private Command $command;
 
     public function __construct(Schedule $schedule, Command $command)
     {

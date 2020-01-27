@@ -16,7 +16,7 @@ use Innmind\Immutable\{
 
 final class Read
 {
-    private $command;
+    private Command $command;
 
     private function __construct(Command $command)
     {

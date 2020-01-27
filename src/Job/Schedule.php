@@ -15,11 +15,11 @@ use Innmind\Immutable\Str;
 
 final class Schedule
 {
-    private $minutes;
-    private $hours;
-    private $daysOfMonth;
-    private $months;
-    private $daysOfWeek;
+    private Minutes $minutes;
+    private Hours $hours;
+    private DaysOfMonth $daysOfMonth;
+    private Months $months;
+    private DaysOfWeek $daysOfWeek;
 
     public function __construct(
         Minutes $minutes,

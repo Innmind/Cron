@@ -15,7 +15,7 @@
         "issues": "http://github.com/Innmind/Cron/issues"
     },
     "require": {
-        "php": "~7.2",
+        "php": "~7.4",
         "innmind/immutable": "^2.15",
         "innmind/server-control": "^2.8"
     },
