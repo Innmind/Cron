@@ -2,9 +2,8 @@
 
 | `develop` |
 |-----------|
-| [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Innmind/Cron/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/Innmind/Cron/?branch=develop) |
-| [![Code Coverage](https://scrutinizer-ci.com/g/Innmind/Cron/badges/coverage.png?b=develop)](https://scrutinizer-ci.com/g/Innmind/Cron/?branch=develop) |
-| [![Build Status](https://scrutinizer-ci.com/g/Innmind/Cron/badges/build.png?b=develop)](https://scrutinizer-ci.com/g/Innmind/Cron/build-status/develop) |
+| [![codecov](https://codecov.io/gh/Innmind/Cron/branch/develop/graph/badge.svg)](https://codecov.io/gh/Innmind/Cron) |
+| [![Build Status](https://github.com/Innmind/Cron/workflows/CI/badge.svg)](https://github.com/Innmind/Cron/actions?query=workflow%3ACI) |
 
 Library to help manage crontabs of a machine
 
