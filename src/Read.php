@@ -26,7 +26,7 @@ final class Read
     {
         return new self(
             Command::foreground('crontab')
-                ->withShortOption('l')
+                ->withShortOption('l'),
         );
     }
 
@@ -35,7 +35,7 @@ final class Read
         return new self(
             Command::foreground('crontab')
                 ->withShortOption('u', $user)
-                ->withShortOption('l')
+                ->withShortOption('l'),
         );
     }
 

@@ -28,7 +28,7 @@ final class Crontab
             $this->command = Command::foreground('echo')
                 ->withArgument(join("\n", $jobs)->toString())
                 ->pipe($command);
-            }
+        }
     }
 
     public static function forConnectedUser(Job ...$jobs): self
@@ -41,7 +41,7 @@ final class Crontab
         return new self(
             Command::foreground('crontab')
                 ->withShortOption('u', $user),
-            ...$jobs
+            ...$jobs,
         );
     }
 

@@ -51,7 +51,7 @@ final class Job
             '',
             static function(string $command, string $key, string $value): string {
                 return "$command$key=$value ";
-            }
+            },
         );
 
         if ($this->command->hasWorkingDirectory()) {
