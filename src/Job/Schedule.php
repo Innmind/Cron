@@ -106,8 +106,15 @@ final class Schedule
         return self::of("$minute $hour * * 6");
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
-        return "{$this->minutes} {$this->hours} {$this->daysOfMonth} {$this->months} {$this->daysOfWeek}";
+        return \sprintf(
+            '%s %s %s %s %s',
+            $this->minutes->toString(),
+            $this->hours->toString(),
+            $this->daysOfMonth->toString(),
+            $this->months->toString(),
+            $this->daysOfWeek->toString(),
+        );
     }
 }

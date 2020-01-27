@@ -53,8 +53,8 @@ class ReadTest extends TestCase
         $this->assertInstanceOf(Sequence::class, $jobs);
         $this->assertSame(Job::class, $jobs->type());
         $this->assertCount(2, $jobs);
-        $this->assertSame('1 2 3 4 5 echo foo', (string) $jobs->first());
-        $this->assertSame('2 3 4 5 6 echo bar', (string) $jobs->last());
+        $this->assertSame('1 2 3 4 5 echo foo', $jobs->first()->toString());
+        $this->assertSame('2 3 4 5 6 echo bar', $jobs->last()->toString());
     }
 
     public function testReadCrontabForSpecificUser()
@@ -89,8 +89,8 @@ class ReadTest extends TestCase
         $this->assertInstanceOf(Sequence::class, $jobs);
         $this->assertSame(Job::class, $jobs->type());
         $this->assertCount(2, $jobs);
-        $this->assertSame('1 2 3 4 5 echo foo', (string) $jobs->first());
-        $this->assertSame('2 3 4 5 6 echo bar', (string) $jobs->last());
+        $this->assertSame('1 2 3 4 5 echo foo', $jobs->first()->toString());
+        $this->assertSame('2 3 4 5 6 echo bar', $jobs->last()->toString());
     }
 
     public function testThrowWhenFaillingToAccessCrontab()

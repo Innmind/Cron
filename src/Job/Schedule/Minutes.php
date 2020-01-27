@@ -26,7 +26,7 @@ final class Minutes
         return new self('*');
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return $this->value;
     }

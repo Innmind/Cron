@@ -27,10 +27,10 @@ class JobTest extends TestCase
     {
         $this->assertSame(
             "1 2 3 4 5 $expected",
-            (string) new Job(
+            (new Job(
                 Schedule::of('1 2 3 4 5'),
                 $command
-            )
+            ))->toString(),
         );
     }
 
@@ -72,7 +72,7 @@ class JobTest extends TestCase
                 $this->assertInstanceOf(Job::class, $job);
                 $this->assertSame(
                     "$minute $hour $dayOfMonth $month $dayOfWeek echo foo bar baz",
-                    (string) $job
+                    $job->toString(),
                 );
             });
     }

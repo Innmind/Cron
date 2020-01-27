@@ -22,7 +22,7 @@ class MonthsTest extends TestCase
         $schedule = Months::each();
 
         $this->assertInstanceOf(Months::class, $schedule);
-        $this->assertSame('*', (string) $schedule);
+        $this->assertSame('*', $schedule->toString());
     }
 
     public function testEachMonthFromRawString()
@@ -30,7 +30,7 @@ class MonthsTest extends TestCase
         $schedule = Months::of('*');
 
         $this->assertInstanceOf(Months::class, $schedule);
-        $this->assertSame('*', (string) $schedule);
+        $this->assertSame('*', $schedule->toString());
     }
 
     public function testPreciseMonthFromRawString()
@@ -41,7 +41,7 @@ class MonthsTest extends TestCase
                 $schedule = Months::of((string) $minute);
 
                 $this->assertInstanceOf(Months::class, $schedule);
-                $this->assertSame((string) $minute, (string) $schedule);
+                $this->assertSame((string) $minute, $schedule->toString());
             });
     }
 
@@ -61,7 +61,7 @@ class MonthsTest extends TestCase
                 $schedule = Months::of($list);
 
                 $this->assertInstanceOf(Months::class, $schedule);
-                $this->assertSame($list, (string) $schedule);
+                $this->assertSame($list, $schedule->toString());
             });
     }
 
@@ -76,7 +76,7 @@ class MonthsTest extends TestCase
                 $schedule = Months::of("$from-$to");
 
                 $this->assertInstanceOf(Months::class, $schedule);
-                $this->assertSame("$from-$to", (string) $schedule);
+                $this->assertSame("$from-$to", $schedule->toString());
             });
     }
 
@@ -88,7 +88,7 @@ class MonthsTest extends TestCase
                 $schedule = Months::of("*/$step");
 
                 $this->assertInstanceOf(Months::class, $schedule);
-                $this->assertSame("*/$step", (string) $schedule);
+                $this->assertSame("*/$step", $schedule->toString());
             });
     }
 
@@ -104,7 +104,7 @@ class MonthsTest extends TestCase
                 $schedule = Months::of("$from-$to/$step");
 
                 $this->assertInstanceOf(Months::class, $schedule);
-                $this->assertSame("$from-$to/$step", (string) $schedule);
+                $this->assertSame("$from-$to/$step", $schedule->toString());
             });
     }
 

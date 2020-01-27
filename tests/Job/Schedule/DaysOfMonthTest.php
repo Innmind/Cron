@@ -22,7 +22,7 @@ class DaysOfMonthTest extends TestCase
         $schedule = DaysOfMonth::each();
 
         $this->assertInstanceOf(DaysOfMonth::class, $schedule);
-        $this->assertSame('*', (string) $schedule);
+        $this->assertSame('*', $schedule->toString());
     }
 
     public function testEachDayOfMonthFromRawString()
@@ -30,7 +30,7 @@ class DaysOfMonthTest extends TestCase
         $schedule = DaysOfMonth::of('*');
 
         $this->assertInstanceOf(DaysOfMonth::class, $schedule);
-        $this->assertSame('*', (string) $schedule);
+        $this->assertSame('*', $schedule->toString());
     }
 
     public function testPreciseDayOfMonthFromRawString()
@@ -41,7 +41,7 @@ class DaysOfMonthTest extends TestCase
                 $schedule = DaysOfMonth::of((string) $minute);
 
                 $this->assertInstanceOf(DaysOfMonth::class, $schedule);
-                $this->assertSame((string) $minute, (string) $schedule);
+                $this->assertSame((string) $minute, $schedule->toString());
             });
     }
 
@@ -61,7 +61,7 @@ class DaysOfMonthTest extends TestCase
                 $schedule = DaysOfMonth::of($list);
 
                 $this->assertInstanceOf(DaysOfMonth::class, $schedule);
-                $this->assertSame($list, (string) $schedule);
+                $this->assertSame($list, $schedule->toString());
             });
     }
 
@@ -76,7 +76,7 @@ class DaysOfMonthTest extends TestCase
                 $schedule = DaysOfMonth::of("$from-$to");
 
                 $this->assertInstanceOf(DaysOfMonth::class, $schedule);
-                $this->assertSame("$from-$to", (string) $schedule);
+                $this->assertSame("$from-$to", $schedule->toString());
             });
     }
 
@@ -88,7 +88,7 @@ class DaysOfMonthTest extends TestCase
                 $schedule = DaysOfMonth::of("*/$step");
 
                 $this->assertInstanceOf(DaysOfMonth::class, $schedule);
-                $this->assertSame("*/$step", (string) $schedule);
+                $this->assertSame("*/$step", $schedule->toString());
             });
     }
 
@@ -104,7 +104,7 @@ class DaysOfMonthTest extends TestCase
                 $schedule = DaysOfMonth::of("$from-$to/$step");
 
                 $this->assertInstanceOf(DaysOfMonth::class, $schedule);
-                $this->assertSame("$from-$to/$step", (string) $schedule);
+                $this->assertSame("$from-$to/$step", $schedule->toString());
             });
     }
 

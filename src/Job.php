@@ -45,7 +45,7 @@ final class Job
         }
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         $command = $this->command->environment()->reduce(
             '',
@@ -60,6 +60,6 @@ final class Job
 
         $command .= $this->command->toString();
 
-        return "$this->schedule $command";
+        return "{$this->schedule->toString()} $command";
     }
 }

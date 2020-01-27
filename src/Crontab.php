@@ -19,7 +19,7 @@ final class Crontab
     {
         $jobs = Sequence::of(Job::class, ...$jobs)->mapTo(
             'string',
-            static fn(Job $job): string => (string) $job,
+            static fn(Job $job): string => $job->toString(),
         );
 
         if ($jobs->empty()) {
