@@ -5,7 +5,7 @@ namespace Innmind\Cron\Job\Schedule;
 
 final class DaysOfWeek
 {
-    private $value;
+    private string $value;
 
     private function __construct(string $value)
     {
@@ -26,7 +26,7 @@ final class DaysOfWeek
         return new self('*');
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return $this->value;
     }

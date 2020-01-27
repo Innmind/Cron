@@ -15,9 +15,9 @@
         "issues": "http://github.com/Innmind/Cron/issues"
     },
     "require": {
-        "php": "~7.2",
-        "innmind/immutable": "^2.15",
-        "innmind/server-control": "^2.8"
+        "php": "~7.4",
+        "innmind/immutable": "~3.0",
+        "innmind/server-control": "~3.0"
     },
     "autoload": {
         "psr-4": {
@@ -31,7 +31,8 @@
     },
     "require-dev": {
         "phpunit/phpunit": "~8.0",
-        "giorgiosironi/eris": "^0.11.0"
+        "giorgiosironi/eris": "^0.11.0",
+        "vimeo/psalm": "~3.7.0"
     },
     "suggest": {
         "innmind/operating-system": "To easily access to a machine control mechanism"

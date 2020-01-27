@@ -9,22 +9,26 @@ use Innmind\Server\Control\{
     Server\Script,
 };
 use Innmind\Immutable\Sequence;
+use function Innmind\Immutable\join;
 
 final class Crontab
 {
-    private $command;
+    private Command $command;
 
     private function __construct(Command $command, Job ...$jobs)
     {
-        $jobs = Sequence::of(...$jobs);
+        $jobs = Sequence::of(Job::class, ...$jobs)->mapTo(
+            'string',
+            static fn(Job $job): string => $job->toString(),
+        );
 
         if ($jobs->empty()) {
             $this->command = $command->withShortOption('r');
         } else {
             $this->command = Command::foreground('echo')
-                ->withArgument((string) $jobs->join("\n"))
+                ->withArgument(join("\n", $jobs)->toString())
                 ->pipe($command);
-            }
+        }
     }
 
     public static function forConnectedUser(Job ...$jobs): self
@@ -37,7 +41,7 @@ final class Crontab
         return new self(
             Command::foreground('crontab')
                 ->withShortOption('u', $user),
-            ...$jobs
+            ...$jobs,
         );
     }
 

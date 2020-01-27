@@ -9,6 +9,7 @@ use Innmind\Cron\{
     Exception\DomainException,
 };
 use Innmind\Server\Control\Server\Command;
+use Innmind\Url\Path;
 use PHPUnit\Framework\TestCase;
 use Eris\{
     Generator,
@@ -26,10 +27,10 @@ class JobTest extends TestCase
     {
         $this->assertSame(
             "1 2 3 4 5 $expected",
-            (string) new Job(
+            (new Job(
                 Schedule::of('1 2 3 4 5'),
                 $command
-            )
+            ))->toString(),
         );
     }
 
@@ -71,7 +72,7 @@ class JobTest extends TestCase
                 $this->assertInstanceOf(Job::class, $job);
                 $this->assertSame(
                     "$minute $hour $dayOfMonth $month $dayOfWeek echo foo bar baz",
-                    (string) $job
+                    $job->toString(),
                 );
             });
     }
@@ -88,14 +89,14 @@ class JobTest extends TestCase
                 "cd /tmp/watev && echo 'foo' > 'bar.txt'",
                 Command::foreground('echo')
                     ->withArgument('foo')
-                    ->overwrite('bar.txt')
-                    ->withWorkingDirectory('/tmp/watev'),
+                    ->overwrite(Path::of('bar.txt'))
+                    ->withWorkingDirectory(Path::of('/tmp/watev')),
             ],
             [
                 "FOO=bar BAR=baz cd /tmp && printenv > 'bar.txt'",
                 Command::foreground('printenv')
-                    ->overwrite('bar.txt')
-                    ->withWorkingDirectory('/tmp')
+                    ->overwrite(Path::of('bar.txt'))
+                    ->withWorkingDirectory(Path::of('/tmp'))
                     ->withEnvironment('FOO', 'bar')
                     ->withEnvironment('BAR', 'baz'),
             ],

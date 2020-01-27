@@ -15,11 +15,11 @@ use Innmind\Immutable\Str;
 
 final class Schedule
 {
-    private $minutes;
-    private $hours;
-    private $daysOfMonth;
-    private $months;
-    private $daysOfWeek;
+    private Minutes $minutes;
+    private Hours $hours;
+    private DaysOfMonth $daysOfMonth;
+    private Months $months;
+    private DaysOfWeek $daysOfWeek;
 
     public function __construct(
         Minutes $minutes,
@@ -45,11 +45,11 @@ final class Schedule
 
         try {
             return new self(
-                Minutes::of((string) $parts->get(0)),
-                Hours::of((string) $parts->get(1)),
-                DaysOfMonth::of((string) $parts->get(2)),
-                Months::of((string) $parts->get(3)),
-                DaysOfWeek::of((string) $parts->get(4))
+                Minutes::of($parts->get(0)->toString()),
+                Hours::of($parts->get(1)->toString()),
+                DaysOfMonth::of($parts->get(2)->toString()),
+                Months::of($parts->get(3)->toString()),
+                DaysOfWeek::of($parts->get(4)->toString())
             );
         } catch (DomainException $e) {
             throw new DomainException($value);
@@ -106,8 +106,15 @@ final class Schedule
         return self::of("$minute $hour * * 6");
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
-        return "{$this->minutes} {$this->hours} {$this->daysOfMonth} {$this->months} {$this->daysOfWeek}";
+        return \sprintf(
+            '%s %s %s %s %s',
+            $this->minutes->toString(),
+            $this->hours->toString(),
+            $this->daysOfMonth->toString(),
+            $this->months->toString(),
+            $this->daysOfWeek->toString(),
+        );
     }
 }

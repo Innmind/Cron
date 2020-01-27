@@ -2,9 +2,8 @@
 
 | `develop` |
 |-----------|
-| [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Innmind/Cron/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/Innmind/Cron/?branch=develop) |
-| [![Code Coverage](https://scrutinizer-ci.com/g/Innmind/Cron/badges/coverage.png?b=develop)](https://scrutinizer-ci.com/g/Innmind/Cron/?branch=develop) |
-| [![Build Status](https://scrutinizer-ci.com/g/Innmind/Cron/badges/build.png?b=develop)](https://scrutinizer-ci.com/g/Innmind/Cron/build-status/develop) |
+| [![codecov](https://codecov.io/gh/Innmind/Cron/branch/develop/graph/badge.svg)](https://codecov.io/gh/Innmind/Cron) |
+| [![Build Status](https://github.com/Innmind/Cron/workflows/CI/badge.svg)](https://github.com/Innmind/Cron/actions?query=workflow%3ACI) |
 
 Library to help manage crontabs of a machine
 
@@ -30,7 +29,7 @@ use Innmind\OperatingSystem\Factory;
 $os = Factory::build();
 $install = Crontab::forConnectedUser(
     Job::of('* * * * * say hello'),
-    Job::of('*/2 * * * * say world')
+    Job::of('*/2 * * * * say world'),
 );
 $install($os->control());
 // this is the same as running "echo '* * * * * say hello' | crontab" in your terminal
@@ -48,7 +47,7 @@ use Innmind\OperatingSystem\Factory;
 $os = Factory::build();
 $install = Crontab::forUser(
     'watev',
-    Job::of('* * * * * say hello')
+    Job::of('* * * * * say hello'),
 );
 $install($os->control());
 // this is the same as running "echo '* * * * * say hello' | crontab -u admin" in your terminal
@@ -67,10 +66,10 @@ use Innmind\Url\Url;
 $os = Factory::build();
 $install = Crontab::forUser(
     'watev',
-    Job::of('* * * * * say hello')
+    Job::of('* * * * * say hello'),
 );
 $install(
-    $os->remote()->ssh(Url::fromString('ssh://example.com'))
+    $os->remote()->ssh(Url::of('ssh://example.com')),
 );
 ```
 

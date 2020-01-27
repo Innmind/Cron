@@ -9,11 +9,12 @@ use Innmind\Cron\{
 };
 use Innmind\Server\Control\Server\Command;
 use Innmind\Immutable\Str;
+use function Innmind\Immutable\join;
 
 final class Job
 {
-    private $schedule;
-    private $command;
+    private Schedule $schedule;
+    private Command $command;
 
     public function __construct(Schedule $schedule, Command $command)
     {
@@ -23,7 +24,12 @@ final class Job
 
     public static function of(string $value): self
     {
-        $parts = Str::of($value)->split(' ');
+        $parts = Str::of($value)
+            ->split(' ')
+            ->mapTo(
+                'string',
+                static fn(Str $part): string => $part->toString(),
+            );
 
         if ($parts->size() < 6) {
             throw new DomainException($value);
@@ -31,29 +37,29 @@ final class Job
 
         try {
             return new self(
-                Schedule::of((string) $parts->take(5)->join(' ')),
-                Command::foreground((string) $parts->drop(5)->join(' '))
+                Schedule::of(join(' ', $parts->take(5))->toString()),
+                Command::foreground(join(' ', $parts->drop(5))->toString()),
             );
         } catch (DomainException $e) {
             throw new DomainException($value);
         }
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         $command = $this->command->environment()->reduce(
             '',
             static function(string $command, string $key, string $value): string {
                 return "$command$key=$value ";
-            }
+            },
         );
 
         if ($this->command->hasWorkingDirectory()) {
-            $command .= 'cd '.$this->command->workingDirectory().' && ';
+            $command .= 'cd '.$this->command->workingDirectory()->toString().' && ';
         }
 
-        $command .= $this->command;
+        $command .= $this->command->toString();
 
-        return "$this->schedule $command";
+        return "{$this->schedule->toString()} $command";
     }
 }
