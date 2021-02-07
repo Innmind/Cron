@@ -47,7 +47,7 @@ final class Read
         $process = $server->processes()->execute($this->command);
         $process->wait();
 
-        if (!$process->exitCode()->isSuccessful()) {
+        if (!$process->exitCode()->successful()) {
             throw new UnableToReadCrontab;
         }
 
