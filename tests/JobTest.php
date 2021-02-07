@@ -11,14 +11,14 @@ use Innmind\Cron\{
 use Innmind\Server\Control\Server\Command;
 use Innmind\Url\Path;
 use PHPUnit\Framework\TestCase;
-use Eris\{
-    Generator,
-    TestTrait,
+use Innmind\BlackBox\{
+    PHPUnit\BlackBox,
+    Set,
 };
 
 class JobTest extends TestCase
 {
-    use TestTrait;
+    use BlackBox;
 
     /**
      * @dataProvider commands
@@ -37,7 +37,7 @@ class JobTest extends TestCase
     public function testThrowWhenNotEnoughScheduleParts()
     {
         $this
-            ->forAll(Generator\elements(...range(0, 4)))
+            ->forAll(Set\Integers::between(0, 4))
             ->then(function($occurences) {
                 $schedule = implode(' ', array_pad([], $occurences, '*'));
 
@@ -60,11 +60,11 @@ class JobTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\elements(...range(0, 59)),
-                Generator\elements(...range(0, 23)),
-                Generator\elements(...range(1, 31)),
-                Generator\elements(...range(1, 12)),
-                Generator\elements(...range(0, 6))
+                Set\Integers::between(0, 59),
+                Set\Integers::between(0, 23),
+                Set\Integers::between(1, 31),
+                Set\Integers::between(1, 12),
+                Set\Integers::between(0, 6)
             )
             ->then(function($minute, $hour, $dayOfMonth, $month, $dayOfWeek) {
                 $job = Job::of("$minute $hour $dayOfMonth $month $dayOfWeek echo foo bar baz");
