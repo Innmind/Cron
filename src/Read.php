@@ -22,6 +22,29 @@ final class Read
         $this->command = $command;
     }
 
+    /**
+     * @return Sequence<Job>
+     */
+    public function __invoke(Server $server): Sequence
+    {
+        $process = $server->processes()->execute($this->command);
+        $process->wait();
+
+        if (!$process->exitCode()->successful()) {
+            throw new UnableToReadCrontab;
+        }
+
+        return Str::of($process->output()->toString())
+            ->split("\n")
+            ->filter(static function(Str $line): bool {
+                return !$line->startsWith('#') && !$line->trim()->empty();
+            })
+            ->mapTo(
+                Job::class,
+                static fn(Str $line): Job => Job::of($line->toString()),
+            );
+    }
+
     public static function forConnectedUser(): self
     {
         return new self(
@@ -37,28 +60,5 @@ final class Read
                 ->withShortOption('u', $user)
                 ->withShortOption('l'),
         );
-    }
-
-    /**
-     * @return Sequence<Job>
-     */
-    public function __invoke(Server $server): Sequence
-    {
-        $process = $server->processes()->execute($this->command);
-        $process->wait();
-
-        if (!$process->exitCode()->isSuccessful()) {
-            throw new UnableToReadCrontab;
-        }
-
-        return Str::of($process->output()->toString())
-            ->split("\n")
-            ->filter(static function(Str $line): bool {
-                return !$line->startsWith('#') && !$line->trim()->empty();
-            })
-            ->mapTo(
-                Job::class,
-                static fn(Str $line): Job => Job::of($line->toString()),
-            );
     }
 }

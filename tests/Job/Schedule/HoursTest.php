@@ -8,14 +8,14 @@ use Innmind\Cron\{
     Exception\DomainException,
 };
 use PHPUnit\Framework\TestCase;
-use Eris\{
-    Generator,
-    TestTrait,
+use Innmind\BlackBox\{
+    PHPUnit\BlackBox,
+    Set,
 };
 
 class HoursTest extends TestCase
 {
-    use TestTrait;
+    use BlackBox;
 
     public function testEachHour()
     {
@@ -36,7 +36,7 @@ class HoursTest extends TestCase
     public function testPreciseHourFromRawString()
     {
         $this
-            ->forAll(Generator\elements(...range(0, 23)))
+            ->forAll(Set\Integers::between(0, 23))
             ->then(function($minute) {
                 $schedule = Hours::of((string) $minute);
 
@@ -49,13 +49,13 @@ class HoursTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\elements(...range(0, 23)),
-                Generator\elements(...range(1, 23))
+                Set\Integers::between(0, 23),
+                Set\Integers::between(1, 23)
             )
             ->then(function($minute, $occurences) {
-                $list = implode(
+                $list = \implode(
                     ',',
-                    array_pad([], $occurences, $minute)
+                    \array_pad([], $occurences, $minute)
                 );
 
                 $schedule = Hours::of($list);
@@ -69,8 +69,8 @@ class HoursTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\elements(...range(0, 23)),
-                Generator\elements(...range(0, 23))
+                Set\Integers::between(0, 23),
+                Set\Integers::between(0, 23)
             )
             ->then(function($from, $to) {
                 $schedule = Hours::of("$from-$to");
@@ -83,7 +83,7 @@ class HoursTest extends TestCase
     public function testEachHourSteppedFromRawString()
     {
         $this
-            ->forAll(Generator\elements(...range(0, 23)))
+            ->forAll(Set\Integers::between(0, 23))
             ->then(function($step) {
                 $schedule = Hours::of("*/$step");
 
@@ -96,9 +96,9 @@ class HoursTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\elements(...range(0, 23)),
-                Generator\elements(...range(0, 23)),
-                Generator\elements(...range(0, 23))
+                Set\Integers::between(0, 23),
+                Set\Integers::between(0, 23),
+                Set\Integers::between(0, 23)
             )
             ->then(function($from, $to, $step) {
                 $schedule = Hours::of("$from-$to/$step");
@@ -111,7 +111,7 @@ class HoursTest extends TestCase
     public function testThrowExceptionWhenUsingRandomString()
     {
         $this
-            ->forAll(Generator\string())
+            ->forAll(Set\Strings::any())
             ->then(function($value) {
                 $this->expectException(DomainException::class);
                 $this->expectExceptionMessage($value);

@@ -1,9 +1,8 @@
 # Cron
 
-| `develop` |
-|-----------|
-| [![codecov](https://codecov.io/gh/Innmind/Cron/branch/develop/graph/badge.svg)](https://codecov.io/gh/Innmind/Cron) |
-| [![Build Status](https://github.com/Innmind/Cron/workflows/CI/badge.svg)](https://github.com/Innmind/Cron/actions?query=workflow%3ACI) |
+[![Build Status](https://github.com/innmind/cron/workflows/CI/badge.svg?branch=master)](https://github.com/innmind/cron/actions?query=workflow%3ACI)
+[![codecov](https://codecov.io/gh/innmind/cron/branch/develop/graph/badge.svg)](https://codecov.io/gh/innmind/cron)
+[![Type Coverage](https://shepherd.dev/github/innmind/cron/coverage.svg)](https://shepherd.dev/github/innmind/cron)
 
 Library to help manage crontabs of a machine
 

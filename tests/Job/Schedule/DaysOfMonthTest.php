@@ -8,14 +8,14 @@ use Innmind\Cron\{
     Exception\DomainException,
 };
 use PHPUnit\Framework\TestCase;
-use Eris\{
-    Generator,
-    TestTrait,
+use Innmind\BlackBox\{
+    PHPUnit\BlackBox,
+    Set,
 };
 
 class DaysOfMonthTest extends TestCase
 {
-    use TestTrait;
+    use BlackBox;
 
     public function testEachDayOfMonth()
     {
@@ -36,7 +36,7 @@ class DaysOfMonthTest extends TestCase
     public function testPreciseDayOfMonthFromRawString()
     {
         $this
-            ->forAll(Generator\elements(...range(0, 31)))
+            ->forAll(Set\Integers::between(0, 31))
             ->then(function($minute) {
                 $schedule = DaysOfMonth::of((string) $minute);
 
@@ -49,13 +49,13 @@ class DaysOfMonthTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\elements(...range(0, 31)),
-                Generator\elements(...range(1, 31))
+                Set\Integers::between(0, 31),
+                Set\Integers::between(1, 31)
             )
             ->then(function($minute, $occurences) {
-                $list = implode(
+                $list = \implode(
                     ',',
-                    array_pad([], $occurences, $minute)
+                    \array_pad([], $occurences, $minute)
                 );
 
                 $schedule = DaysOfMonth::of($list);
@@ -69,8 +69,8 @@ class DaysOfMonthTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\elements(...range(0, 31)),
-                Generator\elements(...range(0, 31))
+                Set\Integers::between(0, 31),
+                Set\Integers::between(0, 31)
             )
             ->then(function($from, $to) {
                 $schedule = DaysOfMonth::of("$from-$to");
@@ -83,7 +83,7 @@ class DaysOfMonthTest extends TestCase
     public function testEachDaysOfMonthteppedFromRawString()
     {
         $this
-            ->forAll(Generator\elements(...range(0, 31)))
+            ->forAll(Set\Integers::between(0, 31))
             ->then(function($step) {
                 $schedule = DaysOfMonth::of("*/$step");
 
@@ -96,9 +96,9 @@ class DaysOfMonthTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\elements(...range(0, 31)),
-                Generator\elements(...range(0, 31)),
-                Generator\elements(...range(0, 31))
+                Set\Integers::between(0, 31),
+                Set\Integers::between(0, 31),
+                Set\Integers::between(0, 31)
             )
             ->then(function($from, $to, $step) {
                 $schedule = DaysOfMonth::of("$from-$to/$step");
@@ -111,7 +111,7 @@ class DaysOfMonthTest extends TestCase
     public function testThrowExceptionWhenUsingRandomString()
     {
         $this
-            ->forAll(Generator\string())
+            ->forAll(Set\Strings::any())
             ->then(function($value) {
                 $this->expectException(DomainException::class);
                 $this->expectExceptionMessage($value);

@@ -8,14 +8,14 @@ use Innmind\Cron\{
     Exception\DomainException,
 };
 use PHPUnit\Framework\TestCase;
-use Eris\{
-    Generator,
-    TestTrait,
+use Innmind\BlackBox\{
+    PHPUnit\BlackBox,
+    Set,
 };
 
 class DaysOfWeekTest extends TestCase
 {
-    use TestTrait;
+    use BlackBox;
 
     public function testEachDayOfWeek()
     {
@@ -36,7 +36,7 @@ class DaysOfWeekTest extends TestCase
     public function testPreciseDayOfWeekFromRawString()
     {
         $this
-            ->forAll(Generator\elements(...range(0, 6)))
+            ->forAll(Set\Integers::between(0, 6))
             ->then(function($minute) {
                 $schedule = DaysOfWeek::of((string) $minute);
 
@@ -49,13 +49,13 @@ class DaysOfWeekTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\elements(...range(0, 6)),
-                Generator\elements(...range(1, 6))
+                Set\Integers::between(0, 6),
+                Set\Integers::between(1, 6)
             )
             ->then(function($minute, $occurences) {
-                $list = implode(
+                $list = \implode(
                     ',',
-                    array_pad([], $occurences, $minute)
+                    \array_pad([], $occurences, $minute)
                 );
 
                 $schedule = DaysOfWeek::of($list);
@@ -69,8 +69,8 @@ class DaysOfWeekTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\elements(...range(0, 6)),
-                Generator\elements(...range(0, 6))
+                Set\Integers::between(0, 6),
+                Set\Integers::between(0, 6)
             )
             ->then(function($from, $to) {
                 $schedule = DaysOfWeek::of("$from-$to");
@@ -83,7 +83,7 @@ class DaysOfWeekTest extends TestCase
     public function testEachDaysOfWeekteppedFromRawString()
     {
         $this
-            ->forAll(Generator\elements(...range(0, 6)))
+            ->forAll(Set\Integers::between(0, 6))
             ->then(function($step) {
                 $schedule = DaysOfWeek::of("*/$step");
 
@@ -96,9 +96,9 @@ class DaysOfWeekTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\elements(...range(0, 6)),
-                Generator\elements(...range(0, 6)),
-                Generator\elements(...range(0, 6))
+                Set\Integers::between(0, 6),
+                Set\Integers::between(0, 6),
+                Set\Integers::between(0, 6)
             )
             ->then(function($from, $to, $step) {
                 $schedule = DaysOfWeek::of("$from-$to/$step");
@@ -111,7 +111,7 @@ class DaysOfWeekTest extends TestCase
     public function testThrowExceptionWhenUsingRandomString()
     {
         $this
-            ->forAll(Generator\string())
+            ->forAll(Set\Strings::any())
             ->then(function($value) {
                 $this->expectException(DomainException::class);
                 $this->expectExceptionMessage($value);

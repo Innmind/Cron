@@ -8,24 +8,24 @@ use Innmind\Cron\{
     Exception\DomainException,
 };
 use PHPUnit\Framework\TestCase;
-use Eris\{
-    Generator,
-    TestTrait,
+use Innmind\BlackBox\{
+    PHPUnit\BlackBox,
+    Set,
 };
 
 class ScheduleTest extends TestCase
 {
-    use TestTrait;
+    use BlackBox;
 
     public function testStringCast()
     {
         $this
             ->forAll(
-                Generator\elements(...range(0, 59)),
-                Generator\elements(...range(0, 23)),
-                Generator\elements(...range(1, 31)),
-                Generator\elements(...range(1, 12)),
-                Generator\elements(...range(0, 6))
+                Set\Integers::between(0, 59),
+                Set\Integers::between(0, 23),
+                Set\Integers::between(1, 31),
+                Set\Integers::between(1, 12),
+                Set\Integers::between(0, 6)
             )
             ->then(function($minute, $hour, $dayOfMonth, $month, $dayOfWeek) {
                 $this->assertSame(
@@ -55,12 +55,9 @@ class ScheduleTest extends TestCase
     public function testThrowWhenNotCorrectNumberOfParts()
     {
         $this
-            ->forAll(Generator\pos())
-            ->when(static function($int) {
-                return $int !== 5;
-            })
+            ->forAll(Set\Integers::between(0, 100)->filter(static fn($int) => $int !== 5))
             ->then(function($int) {
-                $string = implode(' ', array_pad([], $int, '*'));
+                $string = \implode(' ', \array_pad([], $int, '*'));
 
                 $this->expectException(DomainException::class);
                 $this->expectExceptionMessage($string);
@@ -72,7 +69,7 @@ class ScheduleTest extends TestCase
     public function testThrowWhenUsingRandomString()
     {
         $this
-            ->forAll(Generator\string())
+            ->forAll(Set\Strings::any())
             ->then(function($string) {
                 $this->expectException(DomainException::class);
                 $this->expectExceptionMessage($string);
@@ -92,7 +89,7 @@ class ScheduleTest extends TestCase
     public function testEveryHourAt()
     {
         $this
-            ->forAll(Generator\elements(...range(0, 59)))
+            ->forAll(Set\Integers::between(0, 59))
             ->then(function($minute) {
                 $schedule = Schedule::everyHourAt($minute);
 
@@ -104,10 +101,7 @@ class ScheduleTest extends TestCase
     public function testThrowWhenEveryHourAtInvalidMinute()
     {
         $this
-            ->forAll(Generator\pos())
-            ->when(static function($minute) {
-                return $minute > 59;
-            })
+            ->forAll(Set\Integers::above(60))
             ->then(function($minute) {
                 $this->expectException(DomainException::class);
                 $this->expectExceptionMessage("$minute * * * *");
@@ -120,8 +114,8 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\elements(...range(0, 59)),
-                Generator\elements(...range(0, 23))
+                Set\Integers::between(0, 59),
+                Set\Integers::between(0, 23)
             )
             ->then(function($minute, $hour) {
                 $schedule = Schedule::everyDayAt($hour, $minute);
@@ -135,12 +129,9 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\pos(),
-                Generator\elements(...range(0, 23))
+                Set\Integers::above(60),
+                Set\Integers::between(0, 23)
             )
-            ->when(static function($minute) {
-                return $minute > 59;
-            })
             ->then(function($minute, $hour) {
                 $this->expectException(DomainException::class);
                 $this->expectExceptionMessage("$minute $hour * * *");
@@ -153,12 +144,9 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\elements(...range(0, 59)),
-                Generator\pos()
+                Set\Integers::between(0, 59),
+                Set\Integers::above(24),
             )
-            ->when(static function($minute, $hour) {
-                return $hour > 23;
-            })
             ->then(function($minute, $hour) {
                 $this->expectException(DomainException::class);
                 $this->expectExceptionMessage("$minute $hour * * *");
@@ -171,8 +159,8 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\elements(...range(0, 59)),
-                Generator\elements(...range(0, 23))
+                Set\Integers::between(0, 59),
+                Set\Integers::between(0, 23)
             )
             ->then(function($minute, $hour) {
                 $schedule = Schedule::everyMondayAt($hour, $minute);
@@ -186,12 +174,9 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\pos(),
-                Generator\elements(...range(0, 23))
+                Set\Integers::above(60),
+                Set\Integers::between(0, 23)
             )
-            ->when(static function($minute) {
-                return $minute > 59;
-            })
             ->then(function($minute, $hour) {
                 $this->expectException(DomainException::class);
                 $this->expectExceptionMessage("$minute $hour * * 0");
@@ -204,12 +189,9 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\elements(...range(0, 59)),
-                Generator\pos()
+                Set\Integers::between(0, 59),
+                Set\Integers::above(24),
             )
-            ->when(static function($minute, $hour) {
-                return $hour > 23;
-            })
             ->then(function($minute, $hour) {
                 $this->expectException(DomainException::class);
                 $this->expectExceptionMessage("$minute $hour * * 0");
@@ -222,8 +204,8 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\elements(...range(0, 59)),
-                Generator\elements(...range(0, 23))
+                Set\Integers::between(0, 59),
+                Set\Integers::between(0, 23)
             )
             ->then(function($minute, $hour) {
                 $schedule = Schedule::everyTuesdayAt($hour, $minute);
@@ -237,12 +219,9 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\pos(),
-                Generator\elements(...range(0, 23))
+                Set\Integers::above(60),
+                Set\Integers::between(0, 23)
             )
-            ->when(static function($minute) {
-                return $minute > 59;
-            })
             ->then(function($minute, $hour) {
                 $this->expectException(DomainException::class);
                 $this->expectExceptionMessage("$minute $hour * * 1");
@@ -255,12 +234,9 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\elements(...range(0, 59)),
-                Generator\pos()
+                Set\Integers::between(0, 59),
+                Set\Integers::above(24),
             )
-            ->when(static function($minute, $hour) {
-                return $hour > 23;
-            })
             ->then(function($minute, $hour) {
                 $this->expectException(DomainException::class);
                 $this->expectExceptionMessage("$minute $hour * * 1");
@@ -273,8 +249,8 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\elements(...range(0, 59)),
-                Generator\elements(...range(0, 23))
+                Set\Integers::between(0, 59),
+                Set\Integers::between(0, 23)
             )
             ->then(function($minute, $hour) {
                 $schedule = Schedule::everyWednesdayAt($hour, $minute);
@@ -288,12 +264,9 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\pos(),
-                Generator\elements(...range(0, 23))
+                Set\Integers::above(60),
+                Set\Integers::between(0, 23)
             )
-            ->when(static function($minute) {
-                return $minute > 59;
-            })
             ->then(function($minute, $hour) {
                 $this->expectException(DomainException::class);
                 $this->expectExceptionMessage("$minute $hour * * 2");
@@ -306,12 +279,9 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\elements(...range(0, 59)),
-                Generator\pos()
+                Set\Integers::between(0, 59),
+                Set\Integers::above(24)
             )
-            ->when(static function($minute, $hour) {
-                return $hour > 23;
-            })
             ->then(function($minute, $hour) {
                 $this->expectException(DomainException::class);
                 $this->expectExceptionMessage("$minute $hour * * 2");
@@ -324,8 +294,8 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\elements(...range(0, 59)),
-                Generator\elements(...range(0, 23))
+                Set\Integers::between(0, 59),
+                Set\Integers::between(0, 23)
             )
             ->then(function($minute, $hour) {
                 $schedule = Schedule::everyThursdayAt($hour, $minute);
@@ -339,12 +309,9 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\pos(),
-                Generator\elements(...range(0, 23))
+                Set\Integers::above(60),
+                Set\Integers::between(0, 23)
             )
-            ->when(static function($minute) {
-                return $minute > 59;
-            })
             ->then(function($minute, $hour) {
                 $this->expectException(DomainException::class);
                 $this->expectExceptionMessage("$minute $hour * * 3");
@@ -357,12 +324,9 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\elements(...range(0, 59)),
-                Generator\pos()
+                Set\Integers::between(0, 59),
+                Set\Integers::above(24)
             )
-            ->when(static function($minute, $hour) {
-                return $hour > 23;
-            })
             ->then(function($minute, $hour) {
                 $this->expectException(DomainException::class);
                 $this->expectExceptionMessage("$minute $hour * * 3");
@@ -375,8 +339,8 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\elements(...range(0, 59)),
-                Generator\elements(...range(0, 23))
+                Set\Integers::between(0, 59),
+                Set\Integers::between(0, 23)
             )
             ->then(function($minute, $hour) {
                 $schedule = Schedule::everyFridayAt($hour, $minute);
@@ -390,12 +354,9 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\pos(),
-                Generator\elements(...range(0, 23))
+                Set\Integers::above(60),
+                Set\Integers::between(0, 23)
             )
-            ->when(static function($minute) {
-                return $minute > 59;
-            })
             ->then(function($minute, $hour) {
                 $this->expectException(DomainException::class);
                 $this->expectExceptionMessage("$minute $hour * * 4");
@@ -408,12 +369,9 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\elements(...range(0, 59)),
-                Generator\pos()
+                Set\Integers::between(0, 59),
+                Set\Integers::above(24)
             )
-            ->when(static function($minute, $hour) {
-                return $hour > 23;
-            })
             ->then(function($minute, $hour) {
                 $this->expectException(DomainException::class);
                 $this->expectExceptionMessage("$minute $hour * * 4");
@@ -426,8 +384,8 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\elements(...range(0, 59)),
-                Generator\elements(...range(0, 23))
+                Set\Integers::between(0, 59),
+                Set\Integers::between(0, 23)
             )
             ->then(function($minute, $hour) {
                 $schedule = Schedule::everySaturdayAt($hour, $minute);
@@ -441,12 +399,9 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\pos(),
-                Generator\elements(...range(0, 23))
+                Set\Integers::above(60),
+                Set\Integers::between(0, 23)
             )
-            ->when(static function($minute) {
-                return $minute > 59;
-            })
             ->then(function($minute, $hour) {
                 $this->expectException(DomainException::class);
                 $this->expectExceptionMessage("$minute $hour * * 5");
@@ -459,12 +414,9 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\elements(...range(0, 59)),
-                Generator\pos()
+                Set\Integers::between(0, 59),
+                Set\Integers::above(24),
             )
-            ->when(static function($minute, $hour) {
-                return $hour > 23;
-            })
             ->then(function($minute, $hour) {
                 $this->expectException(DomainException::class);
                 $this->expectExceptionMessage("$minute $hour * * 5");
@@ -477,8 +429,8 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\elements(...range(0, 59)),
-                Generator\elements(...range(0, 23))
+                Set\Integers::between(0, 59),
+                Set\Integers::between(0, 23)
             )
             ->then(function($minute, $hour) {
                 $schedule = Schedule::everySundayAt($hour, $minute);
@@ -492,12 +444,9 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\pos(),
-                Generator\elements(...range(0, 23))
+                Set\Integers::above(60),
+                Set\Integers::between(0, 23)
             )
-            ->when(static function($minute) {
-                return $minute > 59;
-            })
             ->then(function($minute, $hour) {
                 $this->expectException(DomainException::class);
                 $this->expectExceptionMessage("$minute $hour * * 6");
@@ -510,12 +459,9 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Generator\elements(...range(0, 59)),
-                Generator\pos()
+                Set\Integers::between(0, 59),
+                Set\Integers::above(24),
             )
-            ->when(static function($minute, $hour) {
-                return $hour > 23;
-            })
             ->then(function($minute, $hour) {
                 $this->expectException(DomainException::class);
                 $this->expectExceptionMessage("$minute $hour * * 6");
