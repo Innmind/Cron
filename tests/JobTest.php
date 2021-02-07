@@ -39,7 +39,7 @@ class JobTest extends TestCase
         $this
             ->forAll(Set\Integers::between(0, 4))
             ->then(function($occurences) {
-                $schedule = implode(' ', array_pad([], $occurences, '*'));
+                $schedule = \implode(' ', \array_pad([], $occurences, '*'));
 
                 $this->expectException(DomainException::class);
                 $this->expectExceptionMessage("$schedule echo 'foo'");
@@ -51,9 +51,9 @@ class JobTest extends TestCase
     public function testThrowWhenNotEnoughSchedulePartsEvenThoughCommandContainsMoreThanSixParts()
     {
         $this->expectException(DomainException::class);
-        $this->expectExceptionMessage("echo foo bar baz foobar foobaz barbaz");
+        $this->expectExceptionMessage('echo foo bar baz foobar foobaz barbaz');
 
-        Job::of("echo foo bar baz foobar foobaz barbaz");
+        Job::of('echo foo bar baz foobar foobaz barbaz');
     }
 
     public function testFromRawString()

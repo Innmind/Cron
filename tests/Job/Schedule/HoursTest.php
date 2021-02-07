@@ -53,9 +53,9 @@ class HoursTest extends TestCase
                 Set\Integers::between(1, 23)
             )
             ->then(function($minute, $occurences) {
-                $list = implode(
+                $list = \implode(
                     ',',
-                    array_pad([], $occurences, $minute)
+                    \array_pad([], $occurences, $minute)
                 );
 
                 $schedule = Hours::of($list);

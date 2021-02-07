@@ -53,9 +53,9 @@ class MonthsTest extends TestCase
                 Set\Integers::between(1, 12)
             )
             ->then(function($minute, $occurences) {
-                $list = implode(
+                $list = \implode(
                     ',',
-                    array_pad([], $occurences, $minute)
+                    \array_pad([], $occurences, $minute)
                 );
 
                 $schedule = Months::of($list);

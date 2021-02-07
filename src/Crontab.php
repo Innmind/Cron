@@ -31,6 +31,13 @@ final class Crontab
         }
     }
 
+    public function __invoke(Server $server): void
+    {
+        $installOn = new Script($this->command);
+
+        $installOn($server);
+    }
+
     public static function forConnectedUser(Job ...$jobs): self
     {
         return new self(Command::foreground('crontab'), ...$jobs);
@@ -43,12 +50,5 @@ final class Crontab
                 ->withShortOption('u', $user),
             ...$jobs,
         );
-    }
-
-    public function __invoke(Server $server): void
-    {
-        $installOn = new Script($this->command);
-
-        $installOn($server);
     }
 }

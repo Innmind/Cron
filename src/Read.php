@@ -22,23 +22,6 @@ final class Read
         $this->command = $command;
     }
 
-    public static function forConnectedUser(): self
-    {
-        return new self(
-            Command::foreground('crontab')
-                ->withShortOption('l'),
-        );
-    }
-
-    public static function forUser(string $user): self
-    {
-        return new self(
-            Command::foreground('crontab')
-                ->withShortOption('u', $user)
-                ->withShortOption('l'),
-        );
-    }
-
     /**
      * @return Sequence<Job>
      */
@@ -60,5 +43,22 @@ final class Read
                 Job::class,
                 static fn(Str $line): Job => Job::of($line->toString()),
             );
+    }
+
+    public static function forConnectedUser(): self
+    {
+        return new self(
+            Command::foreground('crontab')
+                ->withShortOption('l'),
+        );
+    }
+
+    public static function forUser(string $user): self
+    {
+        return new self(
+            Command::foreground('crontab')
+                ->withShortOption('u', $user)
+                ->withShortOption('l'),
+        );
     }
 }

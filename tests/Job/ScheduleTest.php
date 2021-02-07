@@ -57,7 +57,7 @@ class ScheduleTest extends TestCase
         $this
             ->forAll(Set\Integers::between(0, 100)->filter(static fn($int) => $int !== 5))
             ->then(function($int) {
-                $string = implode(' ', array_pad([], $int, '*'));
+                $string = \implode(' ', \array_pad([], $int, '*'));
 
                 $this->expectException(DomainException::class);
                 $this->expectExceptionMessage($string);

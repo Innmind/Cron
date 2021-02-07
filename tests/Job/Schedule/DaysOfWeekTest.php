@@ -53,9 +53,9 @@ class DaysOfWeekTest extends TestCase
                 Set\Integers::between(1, 6)
             )
             ->then(function($minute, $occurences) {
-                $list = implode(
+                $list = \implode(
                     ',',
-                    array_pad([], $occurences, $minute)
+                    \array_pad([], $occurences, $minute)
                 );
 
                 $schedule = DaysOfWeek::of($list);
