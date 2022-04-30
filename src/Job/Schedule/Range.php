@@ -3,7 +3,6 @@ declare(strict_types = 1);
 
 namespace Innmind\Cron\Job\Schedule;
 
-use Innmind\Cron\Exception\DomainException;
 use Innmind\Immutable\Str;
 
 final class Range
@@ -15,30 +14,27 @@ final class Range
         $this->pattern = $pattern;
     }
 
-    /**
-     * @throws DomainException When the value is not accepted in the range
-     */
-    public function __invoke(string $value): void
+    public function __invoke(string $value): bool
     {
         if ($value === '*') {
-            return;
+            return true;
         }
 
         $value = Str::of($value);
 
         // precise value
         if ($value->matches("~^{$this->pattern}$~")) {
-            return;
+            return true;
         }
 
         // list
         if ($value->matches("~^{$this->pattern}(,{$this->pattern})+$~")) {
-            return;
+            return true;
         }
 
         // range
         if ($value->matches("~^{$this->pattern}-{$this->pattern}$~")) {
-            return;
+            return true;
         }
 
         // stepped
@@ -46,13 +42,15 @@ final class Range
             [$hours, $step] = $value->split('/')->toList();
 
             // validate $hours format
-            $this($hours->toString());
+            if (!$this($hours->toString())) {
+                return false;
+            }
 
             if ($step->matches("~^{$this->pattern}$~")) {
-                return;
+                return true;
             }
         }
 
-        throw new DomainException($value->toString());
+        return false;
     }
 }

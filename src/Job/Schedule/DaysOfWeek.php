@@ -3,6 +3,8 @@ declare(strict_types = 1);
 
 namespace Innmind\Cron\Job\Schedule;
 
+use Innmind\Immutable\Maybe;
+
 final class DaysOfWeek
 {
     private string $value;
@@ -12,18 +14,27 @@ final class DaysOfWeek
         $this->value = $value;
     }
 
-    public static function of(string $value): self
+    /**
+     * @return Maybe<self>
+     */
+    public static function of(string $value): Maybe
     {
-        $validate = new Range('[0-6]');
-
-        $validate($value);
-
-        return new self($value);
+        return Maybe::just($value)
+            ->filter(new Range('[0-6]'))
+            ->map(static fn($value) => new self($value));
     }
 
     public static function each(): self
     {
         return new self('*');
+    }
+
+    /**
+     * @param int<0, 6> $day
+     */
+    public static function at(int $day): self
+    {
+        return new self((string) $day);
     }
 
     public function toString(): string

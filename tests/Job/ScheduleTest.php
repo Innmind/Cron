@@ -31,11 +31,11 @@ class ScheduleTest extends TestCase
                 $this->assertSame(
                     "$minute $hour $dayOfMonth $month $dayOfWeek",
                     (new Schedule(
-                        Schedule\Minutes::of((string) $minute),
-                        Schedule\Hours::of((string) $hour),
-                        Schedule\DaysOfMonth::of((string) $dayOfMonth),
-                        Schedule\Months::of((string) $month),
-                        Schedule\DaysOfWeek::of((string) $dayOfWeek),
+                        Schedule\Minutes::at($minute),
+                        Schedule\Hours::at($hour),
+                        Schedule\DaysOfMonth::at($dayOfMonth),
+                        Schedule\Months::at($month),
+                        Schedule\DaysOfWeek::at($dayOfWeek),
                     ))->toString(),
                 );
             });
@@ -46,35 +46,38 @@ class ScheduleTest extends TestCase
      */
     public function testScheduleFromRawString($value)
     {
-        $schedule = Schedule::of($value);
+        $schedule = Schedule::of($value)->match(
+            static fn($schedule) => $schedule,
+            static fn() => null,
+        );
 
         $this->assertInstanceOf(Schedule::class, $schedule);
         $this->assertSame($value, $schedule->toString());
     }
 
-    public function testThrowWhenNotCorrectNumberOfParts()
+    public function testReturnNothingNotCorrectNumberOfParts()
     {
         $this
             ->forAll(Set\Integers::between(0, 100)->filter(static fn($int) => $int !== 5))
             ->then(function($int) {
                 $string = \implode(' ', \array_pad([], $int, '*'));
 
-                $this->expectException(DomainException::class);
-                $this->expectExceptionMessage($string);
-
-                Schedule::of($string);
+                $this->assertNull(Schedule::of($string)->match(
+                    static fn($schedule) => $schedule,
+                    static fn() => null,
+                ));
             });
     }
 
-    public function testThrowWhenUsingRandomString()
+    public function testReturnNothingWhenUsingRandomString()
     {
         $this
             ->forAll(Set\Strings::any())
             ->then(function($string) {
-                $this->expectException(DomainException::class);
-                $this->expectExceptionMessage($string);
-
-                Schedule::of($string);
+                $this->assertNull(Schedule::of($string)->match(
+                    static fn($schedule) => $schedule,
+                    static fn() => null,
+                ));
             });
     }
 
@@ -98,18 +101,6 @@ class ScheduleTest extends TestCase
             });
     }
 
-    public function testThrowWhenEveryHourAtInvalidMinute()
-    {
-        $this
-            ->forAll(Set\Integers::above(60))
-            ->then(function($minute) {
-                $this->expectException(DomainException::class);
-                $this->expectExceptionMessage("$minute * * * *");
-
-                Schedule::everyHourAt($minute);
-            });
-    }
-
     public function testEveryDayAt()
     {
         $this
@@ -122,36 +113,6 @@ class ScheduleTest extends TestCase
 
                 $this->assertInstanceOf(Schedule::class, $schedule);
                 $this->assertSame("$minute $hour * * *", $schedule->toString());
-            });
-    }
-
-    public function testThrowWhenEveryDayAtInvalidMinute()
-    {
-        $this
-            ->forAll(
-                Set\Integers::above(60),
-                Set\Integers::between(0, 23),
-            )
-            ->then(function($minute, $hour) {
-                $this->expectException(DomainException::class);
-                $this->expectExceptionMessage("$minute $hour * * *");
-
-                Schedule::everyDayAt($hour, $minute);
-            });
-    }
-
-    public function testThrowWhenEveryDayAtInvalidHour()
-    {
-        $this
-            ->forAll(
-                Set\Integers::between(0, 59),
-                Set\Integers::above(24),
-            )
-            ->then(function($minute, $hour) {
-                $this->expectException(DomainException::class);
-                $this->expectExceptionMessage("$minute $hour * * *");
-
-                Schedule::everyDayAt($hour, $minute);
             });
     }
 
@@ -170,36 +131,6 @@ class ScheduleTest extends TestCase
             });
     }
 
-    public function testThrowWhenEveryMondayAtInvalidMinute()
-    {
-        $this
-            ->forAll(
-                Set\Integers::above(60),
-                Set\Integers::between(0, 23),
-            )
-            ->then(function($minute, $hour) {
-                $this->expectException(DomainException::class);
-                $this->expectExceptionMessage("$minute $hour * * 0");
-
-                Schedule::everyMondayAt($hour, $minute);
-            });
-    }
-
-    public function testThrowWhenEveryMondayAtInvalidHour()
-    {
-        $this
-            ->forAll(
-                Set\Integers::between(0, 59),
-                Set\Integers::above(24),
-            )
-            ->then(function($minute, $hour) {
-                $this->expectException(DomainException::class);
-                $this->expectExceptionMessage("$minute $hour * * 0");
-
-                Schedule::everyMondayAt($hour, $minute);
-            });
-    }
-
     public function testEveryTuesdayAt()
     {
         $this
@@ -212,36 +143,6 @@ class ScheduleTest extends TestCase
 
                 $this->assertInstanceOf(Schedule::class, $schedule);
                 $this->assertSame("$minute $hour * * 1", $schedule->toString());
-            });
-    }
-
-    public function testThrowWhenEveryTuesdayAtInvalidMinute()
-    {
-        $this
-            ->forAll(
-                Set\Integers::above(60),
-                Set\Integers::between(0, 23),
-            )
-            ->then(function($minute, $hour) {
-                $this->expectException(DomainException::class);
-                $this->expectExceptionMessage("$minute $hour * * 1");
-
-                Schedule::everyTuesdayAt($hour, $minute);
-            });
-    }
-
-    public function testThrowWhenEveryTuesdayAtInvalidHour()
-    {
-        $this
-            ->forAll(
-                Set\Integers::between(0, 59),
-                Set\Integers::above(24),
-            )
-            ->then(function($minute, $hour) {
-                $this->expectException(DomainException::class);
-                $this->expectExceptionMessage("$minute $hour * * 1");
-
-                Schedule::everyTuesdayAt($hour, $minute);
             });
     }
 
@@ -260,36 +161,6 @@ class ScheduleTest extends TestCase
             });
     }
 
-    public function testThrowWhenEveryWednesdayAtInvalidMinute()
-    {
-        $this
-            ->forAll(
-                Set\Integers::above(60),
-                Set\Integers::between(0, 23),
-            )
-            ->then(function($minute, $hour) {
-                $this->expectException(DomainException::class);
-                $this->expectExceptionMessage("$minute $hour * * 2");
-
-                Schedule::everyWednesdayAt($hour, $minute);
-            });
-    }
-
-    public function testThrowWhenEveryWednesdayAtInvalidHour()
-    {
-        $this
-            ->forAll(
-                Set\Integers::between(0, 59),
-                Set\Integers::above(24),
-            )
-            ->then(function($minute, $hour) {
-                $this->expectException(DomainException::class);
-                $this->expectExceptionMessage("$minute $hour * * 2");
-
-                Schedule::everyWednesdayAt($hour, $minute);
-            });
-    }
-
     public function testEveryThursdayAt()
     {
         $this
@@ -302,36 +173,6 @@ class ScheduleTest extends TestCase
 
                 $this->assertInstanceOf(Schedule::class, $schedule);
                 $this->assertSame("$minute $hour * * 3", $schedule->toString());
-            });
-    }
-
-    public function testThrowWhenEveryThursdayAtInvalidMinute()
-    {
-        $this
-            ->forAll(
-                Set\Integers::above(60),
-                Set\Integers::between(0, 23),
-            )
-            ->then(function($minute, $hour) {
-                $this->expectException(DomainException::class);
-                $this->expectExceptionMessage("$minute $hour * * 3");
-
-                Schedule::everyThursdayAt($hour, $minute);
-            });
-    }
-
-    public function testThrowWhenEveryThursdayAtInvalidHour()
-    {
-        $this
-            ->forAll(
-                Set\Integers::between(0, 59),
-                Set\Integers::above(24),
-            )
-            ->then(function($minute, $hour) {
-                $this->expectException(DomainException::class);
-                $this->expectExceptionMessage("$minute $hour * * 3");
-
-                Schedule::everyThursdayAt($hour, $minute);
             });
     }
 
@@ -350,36 +191,6 @@ class ScheduleTest extends TestCase
             });
     }
 
-    public function testThrowWhenEveryFridayAtInvalidMinute()
-    {
-        $this
-            ->forAll(
-                Set\Integers::above(60),
-                Set\Integers::between(0, 23),
-            )
-            ->then(function($minute, $hour) {
-                $this->expectException(DomainException::class);
-                $this->expectExceptionMessage("$minute $hour * * 4");
-
-                Schedule::everyFridayAt($hour, $minute);
-            });
-    }
-
-    public function testThrowWhenEveryFridayAtInvalidHour()
-    {
-        $this
-            ->forAll(
-                Set\Integers::between(0, 59),
-                Set\Integers::above(24),
-            )
-            ->then(function($minute, $hour) {
-                $this->expectException(DomainException::class);
-                $this->expectExceptionMessage("$minute $hour * * 4");
-
-                Schedule::everyFridayAt($hour, $minute);
-            });
-    }
-
     public function testEverySaturdayAt()
     {
         $this
@@ -395,36 +206,6 @@ class ScheduleTest extends TestCase
             });
     }
 
-    public function testThrowWhenEverySaturdayAtInvalidMinute()
-    {
-        $this
-            ->forAll(
-                Set\Integers::above(60),
-                Set\Integers::between(0, 23),
-            )
-            ->then(function($minute, $hour) {
-                $this->expectException(DomainException::class);
-                $this->expectExceptionMessage("$minute $hour * * 5");
-
-                Schedule::everySaturdayAt($hour, $minute);
-            });
-    }
-
-    public function testThrowWhenEverySaturdayAtInvalidHour()
-    {
-        $this
-            ->forAll(
-                Set\Integers::between(0, 59),
-                Set\Integers::above(24),
-            )
-            ->then(function($minute, $hour) {
-                $this->expectException(DomainException::class);
-                $this->expectExceptionMessage("$minute $hour * * 5");
-
-                Schedule::everySaturdayAt($hour, $minute);
-            });
-    }
-
     public function testEverySundayAt()
     {
         $this
@@ -437,36 +218,6 @@ class ScheduleTest extends TestCase
 
                 $this->assertInstanceOf(Schedule::class, $schedule);
                 $this->assertSame("$minute $hour * * 6", $schedule->toString());
-            });
-    }
-
-    public function testThrowWhenEverySundayAtInvalidMinute()
-    {
-        $this
-            ->forAll(
-                Set\Integers::above(60),
-                Set\Integers::between(0, 23),
-            )
-            ->then(function($minute, $hour) {
-                $this->expectException(DomainException::class);
-                $this->expectExceptionMessage("$minute $hour * * 6");
-
-                Schedule::everySundayAt($hour, $minute);
-            });
-    }
-
-    public function testThrowWhenEverySundayAtInvalidHour()
-    {
-        $this
-            ->forAll(
-                Set\Integers::between(0, 59),
-                Set\Integers::above(24),
-            )
-            ->then(function($minute, $hour) {
-                $this->expectException(DomainException::class);
-                $this->expectExceptionMessage("$minute $hour * * 6");
-
-                Schedule::everySundayAt($hour, $minute);
             });
     }
 

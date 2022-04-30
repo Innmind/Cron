@@ -3,10 +3,7 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Cron\Job\Schedule;
 
-use Innmind\Cron\{
-    Job\Schedule\Hours,
-    Exception\DomainException,
-};
+use Innmind\Cron\Job\Schedule\Hours;
 use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
     PHPUnit\BlackBox,
@@ -27,7 +24,10 @@ class HoursTest extends TestCase
 
     public function testEachHourFromRawString()
     {
-        $schedule = Hours::of('*');
+        $schedule = Hours::of('*')->match(
+            static fn($schedule) => $schedule,
+            static fn() => null,
+        );
 
         $this->assertInstanceOf(Hours::class, $schedule);
         $this->assertSame('*', $schedule->toString());
@@ -38,7 +38,10 @@ class HoursTest extends TestCase
         $this
             ->forAll(Set\Integers::between(0, 23))
             ->then(function($minute) {
-                $schedule = Hours::of((string) $minute);
+                $schedule = Hours::of((string) $minute)->match(
+                    static fn($schedule) => $schedule,
+                    static fn() => null,
+                );
 
                 $this->assertInstanceOf(Hours::class, $schedule);
                 $this->assertSame((string) $minute, $schedule->toString());
@@ -58,7 +61,10 @@ class HoursTest extends TestCase
                     \array_pad([], $occurences, $minute),
                 );
 
-                $schedule = Hours::of($list);
+                $schedule = Hours::of($list)->match(
+                    static fn($schedule) => $schedule,
+                    static fn() => null,
+                );
 
                 $this->assertInstanceOf(Hours::class, $schedule);
                 $this->assertSame($list, $schedule->toString());
@@ -73,7 +79,10 @@ class HoursTest extends TestCase
                 Set\Integers::between(0, 23),
             )
             ->then(function($from, $to) {
-                $schedule = Hours::of("$from-$to");
+                $schedule = Hours::of("$from-$to")->match(
+                    static fn($schedule) => $schedule,
+                    static fn() => null,
+                );
 
                 $this->assertInstanceOf(Hours::class, $schedule);
                 $this->assertSame("$from-$to", $schedule->toString());
@@ -85,7 +94,10 @@ class HoursTest extends TestCase
         $this
             ->forAll(Set\Integers::between(0, 23))
             ->then(function($step) {
-                $schedule = Hours::of("*/$step");
+                $schedule = Hours::of("*/$step")->match(
+                    static fn($schedule) => $schedule,
+                    static fn() => null,
+                );
 
                 $this->assertInstanceOf(Hours::class, $schedule);
                 $this->assertSame("*/$step", $schedule->toString());
@@ -101,22 +113,27 @@ class HoursTest extends TestCase
                 Set\Integers::between(0, 23),
             )
             ->then(function($from, $to, $step) {
-                $schedule = Hours::of("$from-$to/$step");
+                $schedule = Hours::of("$from-$to/$step")->match(
+                    static fn($schedule) => $schedule,
+                    static fn() => null,
+                );
 
                 $this->assertInstanceOf(Hours::class, $schedule);
                 $this->assertSame("$from-$to/$step", $schedule->toString());
             });
     }
 
-    public function testThrowExceptionWhenUsingRandomString()
+    public function testReturnNothingWhenUsingRandomString()
     {
         $this
-            ->forAll(Set\Strings::any())
+            ->forAll(Set\Strings::any()->filter(static fn($string) => !\is_numeric($string)))
             ->then(function($value) {
-                $this->expectException(DomainException::class);
-                $this->expectExceptionMessage($value);
+                $schedule = Hours::of($value)->match(
+                    static fn($schedule) => $schedule,
+                    static fn() => null,
+                );
 
-                Hours::of($value);
+                $this->assertNull($schedule);
             });
     }
 }

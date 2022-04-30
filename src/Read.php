@@ -10,6 +10,7 @@ use Innmind\Server\Control\{
 use Innmind\Immutable\{
     Sequence,
     Str,
+    Maybe,
 };
 
 final class Read
@@ -22,20 +23,31 @@ final class Read
     }
 
     /**
-     * @return Sequence<Job>
+     * @return Maybe<Sequence<Job>> Returns nothing when unable to read the crontab
      */
-    public function __invoke(Server $server): Sequence
+    public function __invoke(Server $server): Maybe
     {
         $process = $server->processes()->execute($this->command);
 
-        return Str::of($process->output()->toString())
+        $jobs = Str::of($process->output()->toString())
             ->split("\n")
             ->filter(static function(Str $line): bool {
                 return !$line->startsWith('#') && !$line->trim()->empty();
             })
             ->map(
-                static fn(Str $line): Job => Job::of($line->toString()),
+                static fn(Str $line) => Job::of($line->toString()),
             );
+
+        /**
+         * @psalm-suppress NamedArgumentNotAllowed
+         * @var Maybe<Sequence<Job>>
+         */
+        return $jobs->match(
+            static fn($first, $jobs) => Maybe::all($first, ...$jobs->toList())->map(
+                static fn(Job ...$jobs) => Sequence::of(...$jobs),
+            ),
+            static fn() => Maybe::just(Sequence::of()),
+        );
     }
 
     public static function forConnectedUser(): self

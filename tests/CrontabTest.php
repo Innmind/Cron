@@ -71,8 +71,14 @@ class CrontabTest extends TestCase
     public function testInstallCrontabForConnectedUser()
     {
         $crontab = Crontab::forConnectedUser(
-            Job::of('1 2 3 4 5 echo foo'),
-            Job::of('2 3 4 5 6 echo bar'),
+            Job::of('1 2 3 4 5 echo foo')->match(
+                static fn($job) => $job,
+                static fn() => null,
+            ),
+            Job::of('2 3 4 5 6 echo bar')->match(
+                static fn($job) => $job,
+                static fn() => null,
+            ),
         );
         $server = $this->createMock(Server::class);
         $server
@@ -98,8 +104,14 @@ class CrontabTest extends TestCase
     {
         $crontab = Crontab::forUser(
             'admin',
-            Job::of('1 2 3 4 5 echo foo'),
-            Job::of('2 3 4 5 6 echo bar'),
+            Job::of('1 2 3 4 5 echo foo')->match(
+                static fn($job) => $job,
+                static fn() => null,
+            ),
+            Job::of('2 3 4 5 6 echo bar')->match(
+                static fn($job) => $job,
+                static fn() => null,
+            ),
         );
         $server = $this->createMock(Server::class);
         $server
@@ -125,8 +137,14 @@ class CrontabTest extends TestCase
     {
         $crontab = Crontab::forUser(
             'admin',
-            Job::of('1 2 3 4 5 echo foo'),
-            Job::of('2 3 4 5 6 echo bar'),
+            Job::of('1 2 3 4 5 echo foo')->match(
+                static fn($job) => $job,
+                static fn() => null,
+            ),
+            Job::of('2 3 4 5 6 echo bar')->match(
+                static fn($job) => $job,
+                static fn() => null,
+            ),
         );
         $server = $this->createMock(Server::class);
         $server

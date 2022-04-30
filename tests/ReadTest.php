@@ -6,8 +6,6 @@ namespace Tests\Innmind\Cron;
 use Innmind\Cron\{
     Read,
     Job,
-    Exception\UnableToReadCrontab,
-    Exception\DomainException,
 };
 use Innmind\Server\Control\{
     Server,
@@ -41,7 +39,10 @@ class ReadTest extends TestCase
             ->method('output')
             ->willReturn($this->crontab());
 
-        $jobs = $read($server);
+        $jobs = $read($server)->match(
+            static fn($jobs) => $jobs,
+            static fn() => null,
+        );
 
         $this->assertInstanceOf(Sequence::class, $jobs);
         $this->assertCount(2, $jobs);
@@ -75,7 +76,10 @@ class ReadTest extends TestCase
             ->method('output')
             ->willReturn($this->crontab());
 
-        $jobs = $read($server);
+        $jobs = $read($server)->match(
+            static fn($jobs) => $jobs,
+            static fn() => null,
+        );
 
         $this->assertInstanceOf(Sequence::class, $jobs);
         $this->assertCount(2, $jobs);
@@ -89,7 +93,7 @@ class ReadTest extends TestCase
         ));
     }
 
-    public function testThrowWhenCrontabContainsInvalidJobs()
+    public function testReturnNothingWhenCrontabContainsInvalidJobs()
     {
         $read = Read::forUser('admin');
         $server = $this->createMock(Server::class);
@@ -113,10 +117,10 @@ class ReadTest extends TestCase
             ->method('toString')
             ->willReturn('*');
 
-        $this->expectException(DomainException::class);
-        $this->expectExceptionMessage('*');
-
-        $read($server);
+        $this->assertNull($read($server)->match(
+            static fn($jobs) => $jobs,
+            static fn() => null,
+        ));
     }
 
     private function crontab(): Output

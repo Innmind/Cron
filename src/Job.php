@@ -3,12 +3,12 @@ declare(strict_types = 1);
 
 namespace Innmind\Cron;
 
-use Innmind\Cron\{
-    Job\Schedule,
-    Exception\DomainException,
-};
+use Innmind\Cron\Job\Schedule;
 use Innmind\Server\Control\Server\Command;
-use Innmind\Immutable\Str;
+use Innmind\Immutable\{
+    Str,
+    Maybe,
+};
 
 final class Job
 {
@@ -21,7 +21,10 @@ final class Job
         $this->command = $command;
     }
 
-    public static function of(string $value): self
+    /**
+     * @return Maybe<self>
+     */
+    public static function of(string $value): Maybe
     {
         $parts = Str::of($value)
             ->split(' ')
@@ -30,17 +33,15 @@ final class Job
         $command = Str::of(' ')->join($parts->drop(5))->toString();
 
         if ($command === '') {
-            throw new DomainException($value);
+            /** @var Maybe<self> */
+            return Maybe::nothing();
         }
 
-        try {
-            return new self(
-                Schedule::of(Str::of(' ')->join($parts->take(5))->toString()),
+        return Schedule::of(Str::of(' ')->join($parts->take(5))->toString())
+            ->map(static fn($schedule) => new self(
+                $schedule,
                 Command::foreground($command),
-            );
-        } catch (DomainException $e) {
-            throw new DomainException($value);
-        }
+            ));
     }
 
     public function toString(): string
