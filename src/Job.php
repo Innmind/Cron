@@ -9,7 +9,6 @@ use Innmind\Cron\{
 };
 use Innmind\Server\Control\Server\Command;
 use Innmind\Immutable\Str;
-use function Innmind\Immutable\join;
 
 final class Job
 {
@@ -26,19 +25,18 @@ final class Job
     {
         $parts = Str::of($value)
             ->split(' ')
-            ->mapTo(
-                'string',
-                static fn(Str $part): string => $part->toString(),
-            );
+            ->map(static fn(Str $part): string => $part->toString());
 
-        if ($parts->size() < 6) {
+        $command = Str::of(' ')->join($parts->drop(5))->toString();
+
+        if ($command === '') {
             throw new DomainException($value);
         }
 
         try {
             return new self(
-                Schedule::of(join(' ', $parts->take(5))->toString()),
-                Command::foreground(join(' ', $parts->drop(5))->toString()),
+                Schedule::of(Str::of(' ')->join($parts->take(5))->toString()),
+                Command::foreground($command),
             );
         } catch (DomainException $e) {
             throw new DomainException($value);
@@ -54,9 +52,10 @@ final class Job
             },
         );
 
-        if ($this->command->hasWorkingDirectory()) {
-            $command .= 'cd '.$this->command->workingDirectory()->toString().' && ';
-        }
+        $command .= $this->command->workingDirectory()->match(
+            static fn($workingDirectory) => 'cd '.$workingDirectory->toString().' && ',
+            static fn() => '',
+        );
 
         $command .= $this->command->toString();
 

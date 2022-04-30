@@ -11,7 +11,10 @@ use Innmind\Cron\{
     Job\Schedule\DaysOfWeek,
     Exception\DomainException,
 };
-use Innmind\Immutable\Str;
+use Innmind\Immutable\{
+    Str,
+    Maybe,
+};
 
 final class Schedule
 {
@@ -39,18 +42,19 @@ final class Schedule
     {
         $parts = Str::of($value)->split(' ');
 
-        if ($parts->size() !== 5) {
-            throw new DomainException($value);
-        }
-
         try {
-            return new self(
-                Minutes::of($parts->get(0)->toString()),
-                Hours::of($parts->get(1)->toString()),
-                DaysOfMonth::of($parts->get(2)->toString()),
-                Months::of($parts->get(3)->toString()),
-                DaysOfWeek::of($parts->get(4)->toString()),
-            );
+            return Maybe::all($parts->get(0), $parts->get(1), $parts->get(2), $parts->get(3), $parts->get(4))
+                ->map(static fn(Str $minutes, Str $hours, Str $daysOfMonth, Str $months, Str $daysOfWeek) => new self(
+                    Minutes::of($minutes->toString()),
+                    Hours::of($hours->toString()),
+                    DaysOfMonth::of($daysOfMonth->toString()),
+                    Months::of($months->toString()),
+                    DaysOfWeek::of($daysOfWeek->toString()),
+                ))
+                ->match(
+                    static fn($self) => $self,
+                    static fn() => throw new DomainException($value),
+                );
         } catch (DomainException $e) {
             throw new DomainException($value);
         }

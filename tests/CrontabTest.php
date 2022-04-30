@@ -12,7 +12,11 @@ use Innmind\Server\Control\{
     Server\Processes,
     Server\Process,
     Server\Process\ExitCode,
-    Exception\ScriptFailed,
+    ScriptFailed,
+};
+use Innmind\Immutable\{
+    Either,
+    SideEffect,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -35,13 +39,10 @@ class CrontabTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn($expected = Either::right(new SideEffect));
 
-        $this->assertNull($crontab($server));
+        $this->assertEquals($expected, $crontab($server));
     }
 
     public function testInstallEmptyCrontabForSpecificUser()
@@ -61,13 +62,10 @@ class CrontabTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn($expected = Either::right(new SideEffect));
 
-        $this->assertNull($crontab($server));
+        $this->assertEquals($expected, $crontab($server));
     }
 
     public function testInstallCrontabForConnectedUser()
@@ -90,13 +88,10 @@ class CrontabTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn($expected = Either::right(new SideEffect));
 
-        $this->assertNull($crontab($server));
+        $this->assertEquals($expected, $crontab($server));
     }
 
     public function testInstallCrontabForSpecificUser()
@@ -120,16 +115,13 @@ class CrontabTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn($expected = Either::right(new SideEffect));
 
-        $this->assertNull($crontab($server));
+        $this->assertEquals($expected, $crontab($server));
     }
 
-    public function testExceptionThrowWhenInstallFailed()
+    public function testReturnErrorWhenInstallFailed()
     {
         $crontab = Crontab::forUser(
             'admin',
@@ -147,14 +139,14 @@ class CrontabTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->any())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(1));
+            ->method('wait')
+            ->willReturn(Either::left(new Process\Failed(new ExitCode(1))));
 
-        $this->expectException(ScriptFailed::class);
+        $error = $crontab($server)->match(
+            static fn() => null,
+            static fn($error) => $error,
+        );
 
-        $crontab($server);
+        $this->assertInstanceOf(ScriptFailed::class, $error);
     }
 }

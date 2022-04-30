@@ -38,23 +38,21 @@ class ReadTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
-        $process
-            ->expects($this->once())
             ->method('output')
             ->willReturn($this->crontab());
 
         $jobs = $read($server);
 
         $this->assertInstanceOf(Sequence::class, $jobs);
-        $this->assertSame(Job::class, $jobs->type());
         $this->assertCount(2, $jobs);
-        $this->assertSame('1 2 3 4 5 echo foo', $jobs->first()->toString());
-        $this->assertSame('2 3 4 5 6 echo bar', $jobs->last()->toString());
+        $this->assertSame('1 2 3 4 5 echo foo', $jobs->first()->match(
+            static fn($job) => $job->toString(),
+            static fn() => null,
+        ));
+        $this->assertSame('2 3 4 5 6 echo bar', $jobs->last()->match(
+            static fn($job) => $job->toString(),
+            static fn() => null,
+        ));
     }
 
     public function testReadCrontabForSpecificUser()
@@ -74,48 +72,21 @@ class ReadTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
-        $process
-            ->expects($this->once())
             ->method('output')
             ->willReturn($this->crontab());
 
         $jobs = $read($server);
 
         $this->assertInstanceOf(Sequence::class, $jobs);
-        $this->assertSame(Job::class, $jobs->type());
         $this->assertCount(2, $jobs);
-        $this->assertSame('1 2 3 4 5 echo foo', $jobs->first()->toString());
-        $this->assertSame('2 3 4 5 6 echo bar', $jobs->last()->toString());
-    }
-
-    public function testThrowWhenFaillingToAccessCrontab()
-    {
-        $read = Read::forConnectedUser();
-        $server = $this->createMock(Server::class);
-        $server
-            ->expects($this->once())
-            ->method('processes')
-            ->willReturn($processes = $this->createMock(Processes::class));
-        $processes
-            ->expects($this->once())
-            ->method('execute')
-            ->willReturn($process = $this->createMock(Process::class));
-        $process
-            ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(1));
-
-        $this->expectException(UnableToReadCrontab::class);
-
-        $read($server);
+        $this->assertSame('1 2 3 4 5 echo foo', $jobs->first()->match(
+            static fn($job) => $job->toString(),
+            static fn() => null,
+        ));
+        $this->assertSame('2 3 4 5 6 echo bar', $jobs->last()->match(
+            static fn($job) => $job->toString(),
+            static fn() => null,
+        ));
     }
 
     public function testThrowWhenCrontabContainsInvalidJobs()
@@ -133,13 +104,6 @@ class ReadTest extends TestCase
                 return $command->toString() === "crontab '-u' 'admin' '-l'";
             }))
             ->willReturn($process = $this->createMock(Process::class));
-        $process
-            ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
         $process
             ->expects($this->once())
             ->method('output')

@@ -3,7 +3,6 @@ declare(strict_types = 1);
 
 namespace Innmind\Cron;
 
-use Innmind\Cron\Exception\UnableToReadCrontab;
 use Innmind\Server\Control\{
     Server,
     Server\Command,
@@ -28,19 +27,13 @@ final class Read
     public function __invoke(Server $server): Sequence
     {
         $process = $server->processes()->execute($this->command);
-        $process->wait();
-
-        if (!$process->exitCode()->successful()) {
-            throw new UnableToReadCrontab;
-        }
 
         return Str::of($process->output()->toString())
             ->split("\n")
             ->filter(static function(Str $line): bool {
                 return !$line->startsWith('#') && !$line->trim()->empty();
             })
-            ->mapTo(
-                Job::class,
+            ->map(
                 static fn(Str $line): Job => Job::of($line->toString()),
             );
     }

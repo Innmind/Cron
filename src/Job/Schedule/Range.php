@@ -5,7 +5,6 @@ namespace Innmind\Cron\Job\Schedule;
 
 use Innmind\Cron\Exception\DomainException;
 use Innmind\Immutable\Str;
-use function Innmind\Immutable\unwrap;
 
 final class Range
 {
@@ -44,7 +43,7 @@ final class Range
 
         // stepped
         if ($value->contains('/')) {
-            [$hours, $step] = unwrap($value->split('/'));
+            [$hours, $step] = $value->split('/')->toList();
 
             // validate $hours format
             $this($hours->toString());
