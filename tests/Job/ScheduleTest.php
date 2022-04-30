@@ -25,7 +25,7 @@ class ScheduleTest extends TestCase
                 Set\Integers::between(0, 23),
                 Set\Integers::between(1, 31),
                 Set\Integers::between(1, 12),
-                Set\Integers::between(0, 6)
+                Set\Integers::between(0, 6),
             )
             ->then(function($minute, $hour, $dayOfMonth, $month, $dayOfWeek) {
                 $this->assertSame(
@@ -35,7 +35,7 @@ class ScheduleTest extends TestCase
                         Schedule\Hours::of((string) $hour),
                         Schedule\DaysOfMonth::of((string) $dayOfMonth),
                         Schedule\Months::of((string) $month),
-                        Schedule\DaysOfWeek::of((string) $dayOfWeek)
+                        Schedule\DaysOfWeek::of((string) $dayOfWeek),
                     ))->toString(),
                 );
             });
@@ -115,7 +115,7 @@ class ScheduleTest extends TestCase
         $this
             ->forAll(
                 Set\Integers::between(0, 59),
-                Set\Integers::between(0, 23)
+                Set\Integers::between(0, 23),
             )
             ->then(function($minute, $hour) {
                 $schedule = Schedule::everyDayAt($hour, $minute);
@@ -130,7 +130,7 @@ class ScheduleTest extends TestCase
         $this
             ->forAll(
                 Set\Integers::above(60),
-                Set\Integers::between(0, 23)
+                Set\Integers::between(0, 23),
             )
             ->then(function($minute, $hour) {
                 $this->expectException(DomainException::class);
@@ -160,7 +160,7 @@ class ScheduleTest extends TestCase
         $this
             ->forAll(
                 Set\Integers::between(0, 59),
-                Set\Integers::between(0, 23)
+                Set\Integers::between(0, 23),
             )
             ->then(function($minute, $hour) {
                 $schedule = Schedule::everyMondayAt($hour, $minute);
@@ -175,7 +175,7 @@ class ScheduleTest extends TestCase
         $this
             ->forAll(
                 Set\Integers::above(60),
-                Set\Integers::between(0, 23)
+                Set\Integers::between(0, 23),
             )
             ->then(function($minute, $hour) {
                 $this->expectException(DomainException::class);
@@ -205,7 +205,7 @@ class ScheduleTest extends TestCase
         $this
             ->forAll(
                 Set\Integers::between(0, 59),
-                Set\Integers::between(0, 23)
+                Set\Integers::between(0, 23),
             )
             ->then(function($minute, $hour) {
                 $schedule = Schedule::everyTuesdayAt($hour, $minute);
@@ -220,7 +220,7 @@ class ScheduleTest extends TestCase
         $this
             ->forAll(
                 Set\Integers::above(60),
-                Set\Integers::between(0, 23)
+                Set\Integers::between(0, 23),
             )
             ->then(function($minute, $hour) {
                 $this->expectException(DomainException::class);
@@ -250,7 +250,7 @@ class ScheduleTest extends TestCase
         $this
             ->forAll(
                 Set\Integers::between(0, 59),
-                Set\Integers::between(0, 23)
+                Set\Integers::between(0, 23),
             )
             ->then(function($minute, $hour) {
                 $schedule = Schedule::everyWednesdayAt($hour, $minute);
@@ -265,7 +265,7 @@ class ScheduleTest extends TestCase
         $this
             ->forAll(
                 Set\Integers::above(60),
-                Set\Integers::between(0, 23)
+                Set\Integers::between(0, 23),
             )
             ->then(function($minute, $hour) {
                 $this->expectException(DomainException::class);
@@ -280,7 +280,7 @@ class ScheduleTest extends TestCase
         $this
             ->forAll(
                 Set\Integers::between(0, 59),
-                Set\Integers::above(24)
+                Set\Integers::above(24),
             )
             ->then(function($minute, $hour) {
                 $this->expectException(DomainException::class);
@@ -295,7 +295,7 @@ class ScheduleTest extends TestCase
         $this
             ->forAll(
                 Set\Integers::between(0, 59),
-                Set\Integers::between(0, 23)
+                Set\Integers::between(0, 23),
             )
             ->then(function($minute, $hour) {
                 $schedule = Schedule::everyThursdayAt($hour, $minute);
@@ -310,7 +310,7 @@ class ScheduleTest extends TestCase
         $this
             ->forAll(
                 Set\Integers::above(60),
-                Set\Integers::between(0, 23)
+                Set\Integers::between(0, 23),
             )
             ->then(function($minute, $hour) {
                 $this->expectException(DomainException::class);
@@ -325,7 +325,7 @@ class ScheduleTest extends TestCase
         $this
             ->forAll(
                 Set\Integers::between(0, 59),
-                Set\Integers::above(24)
+                Set\Integers::above(24),
             )
             ->then(function($minute, $hour) {
                 $this->expectException(DomainException::class);
@@ -340,7 +340,7 @@ class ScheduleTest extends TestCase
         $this
             ->forAll(
                 Set\Integers::between(0, 59),
-                Set\Integers::between(0, 23)
+                Set\Integers::between(0, 23),
             )
             ->then(function($minute, $hour) {
                 $schedule = Schedule::everyFridayAt($hour, $minute);
@@ -355,7 +355,7 @@ class ScheduleTest extends TestCase
         $this
             ->forAll(
                 Set\Integers::above(60),
-                Set\Integers::between(0, 23)
+                Set\Integers::between(0, 23),
             )
             ->then(function($minute, $hour) {
                 $this->expectException(DomainException::class);
@@ -370,7 +370,7 @@ class ScheduleTest extends TestCase
         $this
             ->forAll(
                 Set\Integers::between(0, 59),
-                Set\Integers::above(24)
+                Set\Integers::above(24),
             )
             ->then(function($minute, $hour) {
                 $this->expectException(DomainException::class);
@@ -385,7 +385,7 @@ class ScheduleTest extends TestCase
         $this
             ->forAll(
                 Set\Integers::between(0, 59),
-                Set\Integers::between(0, 23)
+                Set\Integers::between(0, 23),
             )
             ->then(function($minute, $hour) {
                 $schedule = Schedule::everySaturdayAt($hour, $minute);
@@ -400,7 +400,7 @@ class ScheduleTest extends TestCase
         $this
             ->forAll(
                 Set\Integers::above(60),
-                Set\Integers::between(0, 23)
+                Set\Integers::between(0, 23),
             )
             ->then(function($minute, $hour) {
                 $this->expectException(DomainException::class);
@@ -430,7 +430,7 @@ class ScheduleTest extends TestCase
         $this
             ->forAll(
                 Set\Integers::between(0, 59),
-                Set\Integers::between(0, 23)
+                Set\Integers::between(0, 23),
             )
             ->then(function($minute, $hour) {
                 $schedule = Schedule::everySundayAt($hour, $minute);
@@ -445,7 +445,7 @@ class ScheduleTest extends TestCase
         $this
             ->forAll(
                 Set\Integers::above(60),
-                Set\Integers::between(0, 23)
+                Set\Integers::between(0, 23),
             )
             ->then(function($minute, $hour) {
                 $this->expectException(DomainException::class);

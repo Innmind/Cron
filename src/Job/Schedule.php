@@ -26,7 +26,7 @@ final class Schedule
         Hours $hours,
         DaysOfMonth $daysOfMonth,
         Months $months,
-        DaysOfWeek $daysOfWeek
+        DaysOfWeek $daysOfWeek,
     ) {
         $this->minutes = $minutes;
         $this->hours = $hours;
@@ -49,7 +49,7 @@ final class Schedule
                 Hours::of($parts->get(1)->toString()),
                 DaysOfMonth::of($parts->get(2)->toString()),
                 Months::of($parts->get(3)->toString()),
-                DaysOfWeek::of($parts->get(4)->toString())
+                DaysOfWeek::of($parts->get(4)->toString()),
             );
         } catch (DomainException $e) {
             throw new DomainException($value);

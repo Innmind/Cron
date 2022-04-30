@@ -74,7 +74,7 @@ class CrontabTest extends TestCase
     {
         $crontab = Crontab::forConnectedUser(
             Job::of('1 2 3 4 5 echo foo'),
-            Job::of('2 3 4 5 6 echo bar')
+            Job::of('2 3 4 5 6 echo bar'),
         );
         $server = $this->createMock(Server::class);
         $server
@@ -104,7 +104,7 @@ class CrontabTest extends TestCase
         $crontab = Crontab::forUser(
             'admin',
             Job::of('1 2 3 4 5 echo foo'),
-            Job::of('2 3 4 5 6 echo bar')
+            Job::of('2 3 4 5 6 echo bar'),
         );
         $server = $this->createMock(Server::class);
         $server
@@ -134,7 +134,7 @@ class CrontabTest extends TestCase
         $crontab = Crontab::forUser(
             'admin',
             Job::of('1 2 3 4 5 echo foo'),
-            Job::of('2 3 4 5 6 echo bar')
+            Job::of('2 3 4 5 6 echo bar'),
         );
         $server = $this->createMock(Server::class);
         $server

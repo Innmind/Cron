@@ -29,7 +29,7 @@ class JobTest extends TestCase
             "1 2 3 4 5 $expected",
             (new Job(
                 Schedule::of('1 2 3 4 5'),
-                $command
+                $command,
             ))->toString(),
         );
     }
@@ -64,7 +64,7 @@ class JobTest extends TestCase
                 Set\Integers::between(0, 23),
                 Set\Integers::between(1, 31),
                 Set\Integers::between(1, 12),
-                Set\Integers::between(0, 6)
+                Set\Integers::between(0, 6),
             )
             ->then(function($minute, $hour, $dayOfMonth, $month, $dayOfWeek) {
                 $job = Job::of("$minute $hour $dayOfMonth $month $dayOfWeek echo foo bar baz");

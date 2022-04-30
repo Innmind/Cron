@@ -50,12 +50,12 @@ class HoursTest extends TestCase
         $this
             ->forAll(
                 Set\Integers::between(0, 23),
-                Set\Integers::between(1, 23)
+                Set\Integers::between(1, 23),
             )
             ->then(function($minute, $occurences) {
                 $list = \implode(
                     ',',
-                    \array_pad([], $occurences, $minute)
+                    \array_pad([], $occurences, $minute),
                 );
 
                 $schedule = Hours::of($list);
@@ -70,7 +70,7 @@ class HoursTest extends TestCase
         $this
             ->forAll(
                 Set\Integers::between(0, 23),
-                Set\Integers::between(0, 23)
+                Set\Integers::between(0, 23),
             )
             ->then(function($from, $to) {
                 $schedule = Hours::of("$from-$to");
@@ -98,7 +98,7 @@ class HoursTest extends TestCase
             ->forAll(
                 Set\Integers::between(0, 23),
                 Set\Integers::between(0, 23),
-                Set\Integers::between(0, 23)
+                Set\Integers::between(0, 23),
             )
             ->then(function($from, $to, $step) {
                 $schedule = Hours::of("$from-$to/$step");

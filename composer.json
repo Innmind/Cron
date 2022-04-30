@@ -15,7 +15,7 @@
         "issues": "http://github.com/Innmind/Cron/issues"
     },
     "require": {
-        "php": "~7.4|~8.0",
+        "php": "~8.1",
         "innmind/immutable": "~3.0",
         "innmind/server-control": "~3.0"
     },
@@ -33,7 +33,7 @@
         "phpunit/phpunit": "~9.0",
         "vimeo/psalm": "~4.4",
         "innmind/black-box": "^4.16",
-        "innmind/coding-standard": "^1.1"
+        "innmind/coding-standard": "~2.0"
     },
     "suggest": {
         "innmind/operating-system": "To easily access to a machine control mechanism"

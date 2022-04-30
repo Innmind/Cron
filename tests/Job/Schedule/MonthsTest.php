@@ -50,12 +50,12 @@ class MonthsTest extends TestCase
         $this
             ->forAll(
                 Set\Integers::between(1, 12),
-                Set\Integers::between(1, 12)
+                Set\Integers::between(1, 12),
             )
             ->then(function($minute, $occurences) {
                 $list = \implode(
                     ',',
-                    \array_pad([], $occurences, $minute)
+                    \array_pad([], $occurences, $minute),
                 );
 
                 $schedule = Months::of($list);
@@ -70,7 +70,7 @@ class MonthsTest extends TestCase
         $this
             ->forAll(
                 Set\Integers::between(1, 12),
-                Set\Integers::between(1, 12)
+                Set\Integers::between(1, 12),
             )
             ->then(function($from, $to) {
                 $schedule = Months::of("$from-$to");
@@ -98,7 +98,7 @@ class MonthsTest extends TestCase
             ->forAll(
                 Set\Integers::between(1, 12),
                 Set\Integers::between(1, 12),
-                Set\Integers::between(1, 12)
+                Set\Integers::between(1, 12),
             )
             ->then(function($from, $to, $step) {
                 $schedule = Months::of("$from-$to/$step");

@@ -50,12 +50,12 @@ class DaysOfWeekTest extends TestCase
         $this
             ->forAll(
                 Set\Integers::between(0, 6),
-                Set\Integers::between(1, 6)
+                Set\Integers::between(1, 6),
             )
             ->then(function($minute, $occurences) {
                 $list = \implode(
                     ',',
-                    \array_pad([], $occurences, $minute)
+                    \array_pad([], $occurences, $minute),
                 );
 
                 $schedule = DaysOfWeek::of($list);
@@ -70,7 +70,7 @@ class DaysOfWeekTest extends TestCase
         $this
             ->forAll(
                 Set\Integers::between(0, 6),
-                Set\Integers::between(0, 6)
+                Set\Integers::between(0, 6),
             )
             ->then(function($from, $to) {
                 $schedule = DaysOfWeek::of("$from-$to");
@@ -98,7 +98,7 @@ class DaysOfWeekTest extends TestCase
             ->forAll(
                 Set\Integers::between(0, 6),
                 Set\Integers::between(0, 6),
-                Set\Integers::between(0, 6)
+                Set\Integers::between(0, 6),
             )
             ->then(function($from, $to, $step) {
                 $schedule = DaysOfWeek::of("$from-$to/$step");
