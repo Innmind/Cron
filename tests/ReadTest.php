@@ -14,7 +14,11 @@ use Innmind\Server\Control\{
     Server\Process\ExitCode,
     Server\Process\Output,
 };
-use Innmind\Immutable\Sequence;
+use Innmind\Immutable\{
+    Sequence,
+    Either,
+    SideEffect,
+};
 use PHPUnit\Framework\TestCase;
 
 class ReadTest extends TestCase
@@ -34,6 +38,10 @@ class ReadTest extends TestCase
                 return $command->toString() === "crontab '-l'";
             }))
             ->willReturn($process = $this->createMock(Process::class));
+        $process
+            ->expects($this->once())
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
         $process
             ->expects($this->once())
             ->method('output')
@@ -73,6 +81,10 @@ class ReadTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
+        $process
+            ->expects($this->once())
             ->method('output')
             ->willReturn($this->crontab());
 
@@ -110,12 +122,45 @@ class ReadTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
+        $process
+            ->expects($this->once())
             ->method('output')
             ->willReturn($output = $this->createMock(Output::class));
         $output
             ->expects($this->once())
             ->method('toString')
             ->willReturn('*');
+
+        $this->assertNull($read($server)->match(
+            static fn($jobs) => $jobs,
+            static fn() => null,
+        ));
+    }
+
+    public function testReturnNothingWhenProcessToReadTheCrontabFailed()
+    {
+        $read = Read::forUser('admin');
+        $server = $this->createMock(Server::class);
+        $server
+            ->expects($this->once())
+            ->method('processes')
+            ->willReturn($processes = $this->createMock(Processes::class));
+        $processes
+            ->expects($this->once())
+            ->method('execute')
+            ->with($this->callback(static function($command) {
+                return $command->toString() === "crontab '-u' 'admin' '-l'";
+            }))
+            ->willReturn($process = $this->createMock(Process::class));
+        $process
+            ->expects($this->once())
+            ->method('wait')
+            ->willReturn(Either::left(new Process\Failed(new ExitCode(1))));
+        $process
+            ->expects($this->never())
+            ->method('output');
 
         $this->assertNull($read($server)->match(
             static fn($jobs) => $jobs,

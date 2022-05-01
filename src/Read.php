@@ -28,6 +28,15 @@ final class Read
     public function __invoke(Server $server): Maybe
     {
         $process = $server->processes()->execute($this->command);
+        $success = $process->wait()->match(
+            static fn() => true,
+            static fn() => false,
+        );
+
+        if (!$success) {
+            /** @var Maybe<Sequence<Job>> */
+            return Maybe::nothing();
+        }
 
         $jobs = Str::of($process->output()->toString())
             ->split("\n")
