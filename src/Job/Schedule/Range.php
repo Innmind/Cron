@@ -5,6 +5,9 @@ namespace Innmind\Cron\Job\Schedule;
 
 use Innmind\Immutable\Str;
 
+/**
+ * @psalm-immutable
+ */
 final class Range
 {
     private string $pattern;

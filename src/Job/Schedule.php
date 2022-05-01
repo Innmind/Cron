@@ -16,6 +16,9 @@ use Innmind\Immutable\{
     Maybe,
 };
 
+/**
+ * @psalm-immutable
+ */
 final class Schedule
 {
     private Minutes $minutes;
@@ -39,6 +42,8 @@ final class Schedule
     }
 
     /**
+     * @psalm-pure
+     *
      * @param literal-string $value
      *
      * @throws \DomainException
@@ -52,6 +57,8 @@ final class Schedule
     }
 
     /**
+     * @psalm-pure
+     *
      * @return Maybe<self>
      */
     public static function maybe(string $value): Maybe
@@ -95,6 +102,9 @@ final class Schedule
             ));
     }
 
+    /**
+     * @psalm-pure
+     */
     public static function everyMinute(): self
     {
         return new self(
@@ -107,6 +117,8 @@ final class Schedule
     }
 
     /**
+     * @psalm-pure
+     *
      * @param int<0, 59> $minute
      */
     public static function everyHourAt(int $minute): self
@@ -121,6 +133,8 @@ final class Schedule
     }
 
     /**
+     * @psalm-pure
+     *
      * @param int<0, 23> $hour
      * @param int<0, 59> $minute
      */
@@ -136,6 +150,8 @@ final class Schedule
     }
 
     /**
+     * @psalm-pure
+     *
      * @param int<0, 23> $hour
      * @param int<0, 59> $minute
      */
@@ -151,6 +167,8 @@ final class Schedule
     }
 
     /**
+     * @psalm-pure
+     *
      * @param int<0, 23> $hour
      * @param int<0, 59> $minute
      */
@@ -166,6 +184,8 @@ final class Schedule
     }
 
     /**
+     * @psalm-pure
+     *
      * @param int<0, 23> $hour
      * @param int<0, 59> $minute
      */
@@ -181,6 +201,8 @@ final class Schedule
     }
 
     /**
+     * @psalm-pure
+     *
      * @param int<0, 23> $hour
      * @param int<0, 59> $minute
      */
@@ -196,6 +218,8 @@ final class Schedule
     }
 
     /**
+     * @psalm-pure
+     *
      * @param int<0, 23> $hour
      * @param int<0, 59> $minute
      */
@@ -211,6 +235,8 @@ final class Schedule
     }
 
     /**
+     * @psalm-pure
+     *
      * @param int<0, 23> $hour
      * @param int<0, 59> $minute
      */
@@ -226,6 +252,8 @@ final class Schedule
     }
 
     /**
+     * @psalm-pure
+     *
      * @param int<0, 23> $hour
      * @param int<0, 59> $minute
      */

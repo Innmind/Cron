@@ -5,6 +5,9 @@ namespace Innmind\Cron\Job\Schedule;
 
 use Innmind\Immutable\Maybe;
 
+/**
+ * @psalm-immutable
+ */
 final class Minutes
 {
     private string $value;
@@ -15,6 +18,8 @@ final class Minutes
     }
 
     /**
+     * @psalm-pure
+     *
      * @param literal-string $value
      *
      * @throws \DomainException
@@ -28,6 +33,8 @@ final class Minutes
     }
 
     /**
+     * @psalm-pure
+     *
      * @return Maybe<self>
      */
     public static function maybe(string $value): Maybe
@@ -37,12 +44,17 @@ final class Minutes
             ->map(static fn($value) => new self($value));
     }
 
+    /**
+     * @psalm-pure
+     */
     public static function each(): self
     {
         return new self('*');
     }
 
     /**
+     * @psalm-pure
+     *
      * @param int<0, 59> $minute
      */
     public static function at(int $minute): self

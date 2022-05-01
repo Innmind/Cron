@@ -22,6 +22,7 @@ final class Crontab
 
     /**
      * @no-named-arguments
+     * @psalm-mutation-free
      */
     private function __construct(Command $command, Job ...$jobs)
     {
@@ -50,6 +51,7 @@ final class Crontab
 
     /**
      * @no-named-arguments
+     * @psalm-pure
      */
     public static function forConnectedUser(Job ...$jobs): self
     {
@@ -58,6 +60,7 @@ final class Crontab
 
     /**
      * @no-named-arguments
+     * @psalm-pure
      */
     public static function forUser(string $user, Job ...$jobs): self
     {

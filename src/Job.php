@@ -10,6 +10,9 @@ use Innmind\Immutable\{
     Maybe,
 };
 
+/**
+ * @psalm-immutable
+ */
 final class Job
 {
     private Schedule $schedule;
@@ -22,6 +25,8 @@ final class Job
     }
 
     /**
+     * @psalm-pure
+     *
      * @param literal-string $value
      *
      * @throws \DomainException
@@ -35,6 +40,8 @@ final class Job
     }
 
     /**
+     * @psalm-pure
+     *
      * @return Maybe<self>
      */
     public static function maybe(string $value): Maybe
