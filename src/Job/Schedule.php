@@ -11,8 +11,14 @@ use Innmind\Cron\{
     Job\Schedule\DaysOfWeek,
     Exception\DomainException,
 };
-use Innmind\Immutable\Str;
+use Innmind\Immutable\{
+    Str,
+    Maybe,
+};
 
+/**
+ * @psalm-immutable
+ */
 final class Schedule
 {
     private Minutes $minutes;
@@ -26,7 +32,7 @@ final class Schedule
         Hours $hours,
         DaysOfMonth $daysOfMonth,
         Months $months,
-        DaysOfWeek $daysOfWeek
+        DaysOfWeek $daysOfWeek,
     ) {
         $this->minutes = $minutes;
         $this->hours = $hours;
@@ -35,75 +41,231 @@ final class Schedule
         $this->daysOfWeek = $daysOfWeek;
     }
 
+    /**
+     * @psalm-pure
+     *
+     * @param literal-string $value
+     *
+     * @throws \DomainException
+     */
     public static function of(string $value): self
+    {
+        return self::maybe($value)->match(
+            static fn($self) => $self,
+            static fn() => throw new \DomainException($value),
+        );
+    }
+
+    /**
+     * @psalm-pure
+     *
+     * @return Maybe<self>
+     */
+    public static function maybe(string $value): Maybe
     {
         $parts = Str::of($value)->split(' ');
 
         if ($parts->size() !== 5) {
-            throw new DomainException($value);
+            /** @var Maybe<self> */
+            return Maybe::nothing();
         }
 
-        try {
-            return new self(
-                Minutes::of($parts->get(0)->toString()),
-                Hours::of($parts->get(1)->toString()),
-                DaysOfMonth::of($parts->get(2)->toString()),
-                Months::of($parts->get(3)->toString()),
-                DaysOfWeek::of($parts->get(4)->toString())
-            );
-        } catch (DomainException $e) {
-            throw new DomainException($value);
-        }
+        $minutes = $parts
+            ->get(0)
+            ->flatMap(static fn($value) => Minutes::maybe($value->toString()));
+        $hours = $parts
+            ->get(1)
+            ->flatMap(static fn($value) => Hours::maybe($value->toString()));
+        $daysOfMonth = $parts
+            ->get(2)
+            ->flatMap(static fn($value) => DaysOfMonth::maybe($value->toString()));
+        $months = $parts
+            ->get(3)
+            ->flatMap(static fn($value) => Months::maybe($value->toString()));
+        $daysOfWeek = $parts
+            ->get(4)
+            ->flatMap(static fn($value) => DaysOfWeek::maybe($value->toString()));
+
+        return Maybe::all($minutes, $hours, $daysOfMonth, $months, $daysOfWeek)
+            ->map(static fn(
+                Minutes $minutes,
+                Hours $hours,
+                DaysOfMonth $daysOfMonth,
+                Months $months,
+                DaysOfWeek $daysOfWeek,
+            ) => new self(
+                $minutes,
+                $hours,
+                $daysOfMonth,
+                $months,
+                $daysOfWeek,
+            ));
     }
 
+    /**
+     * @psalm-pure
+     */
     public static function everyMinute(): self
     {
-        return self::of('* * * * *');
+        return new self(
+            Minutes::each(),
+            Hours::each(),
+            DaysOfMonth::each(),
+            Months::each(),
+            DaysOfWeek::each(),
+        );
     }
 
+    /**
+     * @psalm-pure
+     *
+     * @param int<0, 59> $minute
+     */
     public static function everyHourAt(int $minute): self
     {
-        return self::of("$minute * * * *");
+        return new self(
+            Minutes::at($minute),
+            Hours::each(),
+            DaysOfMonth::each(),
+            Months::each(),
+            DaysOfWeek::each(),
+        );
     }
 
+    /**
+     * @psalm-pure
+     *
+     * @param int<0, 23> $hour
+     * @param int<0, 59> $minute
+     */
     public static function everyDayAt(int $hour, int $minute): self
     {
-        return self::of("$minute $hour * * *");
+        return new self(
+            Minutes::at($minute),
+            Hours::at($hour),
+            DaysOfMonth::each(),
+            Months::each(),
+            DaysOfWeek::each(),
+        );
     }
 
+    /**
+     * @psalm-pure
+     *
+     * @param int<0, 23> $hour
+     * @param int<0, 59> $minute
+     */
     public static function everyMondayAt(int $hour, int $minute): self
     {
-        return self::of("$minute $hour * * 0");
+        return new self(
+            Minutes::at($minute),
+            Hours::at($hour),
+            DaysOfMonth::each(),
+            Months::each(),
+            DaysOfWeek::at(1),
+        );
     }
 
+    /**
+     * @psalm-pure
+     *
+     * @param int<0, 23> $hour
+     * @param int<0, 59> $minute
+     */
     public static function everyTuesdayAt(int $hour, int $minute): self
     {
-        return self::of("$minute $hour * * 1");
+        return new self(
+            Minutes::at($minute),
+            Hours::at($hour),
+            DaysOfMonth::each(),
+            Months::each(),
+            DaysOfWeek::at(2),
+        );
     }
 
+    /**
+     * @psalm-pure
+     *
+     * @param int<0, 23> $hour
+     * @param int<0, 59> $minute
+     */
     public static function everyWednesdayAt(int $hour, int $minute): self
     {
-        return self::of("$minute $hour * * 2");
+        return new self(
+            Minutes::at($minute),
+            Hours::at($hour),
+            DaysOfMonth::each(),
+            Months::each(),
+            DaysOfWeek::at(3),
+        );
     }
 
+    /**
+     * @psalm-pure
+     *
+     * @param int<0, 23> $hour
+     * @param int<0, 59> $minute
+     */
     public static function everyThursdayAt(int $hour, int $minute): self
     {
-        return self::of("$minute $hour * * 3");
+        return new self(
+            Minutes::at($minute),
+            Hours::at($hour),
+            DaysOfMonth::each(),
+            Months::each(),
+            DaysOfWeek::at(4),
+        );
     }
 
+    /**
+     * @psalm-pure
+     *
+     * @param int<0, 23> $hour
+     * @param int<0, 59> $minute
+     */
     public static function everyFridayAt(int $hour, int $minute): self
     {
-        return self::of("$minute $hour * * 4");
+        return new self(
+            Minutes::at($minute),
+            Hours::at($hour),
+            DaysOfMonth::each(),
+            Months::each(),
+            DaysOfWeek::at(5),
+        );
     }
 
+    /**
+     * @psalm-pure
+     *
+     * @param int<0, 23> $hour
+     * @param int<0, 59> $minute
+     */
     public static function everySaturdayAt(int $hour, int $minute): self
     {
-        return self::of("$minute $hour * * 5");
+        return new self(
+            Minutes::at($minute),
+            Hours::at($hour),
+            DaysOfMonth::each(),
+            Months::each(),
+            DaysOfWeek::at(6),
+        );
     }
 
+    /**
+     * @psalm-pure
+     *
+     * @param int<0, 23> $hour
+     * @param int<0, 59> $minute
+     */
     public static function everySundayAt(int $hour, int $minute): self
     {
-        return self::of("$minute $hour * * 6");
+        return new self(
+            Minutes::at($minute),
+            Hours::at($hour),
+            DaysOfMonth::each(),
+            Months::each(),
+            DaysOfWeek::at(0),
+        );
     }
 
     public function toString(): string

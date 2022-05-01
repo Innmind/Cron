@@ -3,14 +3,16 @@ declare(strict_types = 1);
 
 namespace Innmind\Cron;
 
-use Innmind\Cron\{
-    Job\Schedule,
-    Exception\DomainException,
-};
+use Innmind\Cron\Job\Schedule;
 use Innmind\Server\Control\Server\Command;
-use Innmind\Immutable\Str;
-use function Innmind\Immutable\join;
+use Innmind\Immutable\{
+    Str,
+    Maybe,
+};
 
+/**
+ * @psalm-immutable
+ */
 final class Job
 {
     private Schedule $schedule;
@@ -22,27 +24,44 @@ final class Job
         $this->command = $command;
     }
 
+    /**
+     * @psalm-pure
+     *
+     * @param literal-string $value
+     *
+     * @throws \DomainException
+     */
     public static function of(string $value): self
+    {
+        return self::maybe($value)->match(
+            static fn($self) => $self,
+            static fn() => throw new \DomainException($value),
+        );
+    }
+
+    /**
+     * @psalm-pure
+     *
+     * @return Maybe<self>
+     */
+    public static function maybe(string $value): Maybe
     {
         $parts = Str::of($value)
             ->split(' ')
-            ->mapTo(
-                'string',
-                static fn(Str $part): string => $part->toString(),
-            );
+            ->map(static fn(Str $part): string => $part->toString());
 
-        if ($parts->size() < 6) {
-            throw new DomainException($value);
+        $command = Str::of(' ')->join($parts->drop(5))->toString();
+
+        if ($command === '') {
+            /** @var Maybe<self> */
+            return Maybe::nothing();
         }
 
-        try {
-            return new self(
-                Schedule::of(join(' ', $parts->take(5))->toString()),
-                Command::foreground(join(' ', $parts->drop(5))->toString()),
-            );
-        } catch (DomainException $e) {
-            throw new DomainException($value);
-        }
+        return Schedule::maybe(Str::of(' ')->join($parts->take(5))->toString())
+            ->map(static fn($schedule) => new self(
+                $schedule,
+                Command::foreground($command),
+            ));
     }
 
     public function toString(): string
@@ -54,9 +73,10 @@ final class Job
             },
         );
 
-        if ($this->command->hasWorkingDirectory()) {
-            $command .= 'cd '.$this->command->workingDirectory()->toString().' && ';
-        }
+        $command .= $this->command->workingDirectory()->match(
+            static fn($workingDirectory) => 'cd '.$workingDirectory->toString().' && ',
+            static fn() => '',
+        );
 
         $command .= $this->command->toString();
 

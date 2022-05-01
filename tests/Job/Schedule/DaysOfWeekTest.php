@@ -3,10 +3,7 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Cron\Job\Schedule;
 
-use Innmind\Cron\{
-    Job\Schedule\DaysOfWeek,
-    Exception\DomainException,
-};
+use Innmind\Cron\Job\Schedule\DaysOfWeek;
 use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
     PHPUnit\BlackBox,
@@ -27,7 +24,10 @@ class DaysOfWeekTest extends TestCase
 
     public function testEachDayOfWeekFromRawString()
     {
-        $schedule = DaysOfWeek::of('*');
+        $schedule = DaysOfWeek::maybe('*')->match(
+            static fn($schedule) => $schedule,
+            static fn() => null,
+        );
 
         $this->assertInstanceOf(DaysOfWeek::class, $schedule);
         $this->assertSame('*', $schedule->toString());
@@ -38,7 +38,10 @@ class DaysOfWeekTest extends TestCase
         $this
             ->forAll(Set\Integers::between(0, 6))
             ->then(function($minute) {
-                $schedule = DaysOfWeek::of((string) $minute);
+                $schedule = DaysOfWeek::maybe((string) $minute)->match(
+                    static fn($schedule) => $schedule,
+                    static fn() => null,
+                );
 
                 $this->assertInstanceOf(DaysOfWeek::class, $schedule);
                 $this->assertSame((string) $minute, $schedule->toString());
@@ -50,15 +53,18 @@ class DaysOfWeekTest extends TestCase
         $this
             ->forAll(
                 Set\Integers::between(0, 6),
-                Set\Integers::between(1, 6)
+                Set\Integers::between(1, 6),
             )
             ->then(function($minute, $occurences) {
                 $list = \implode(
                     ',',
-                    \array_pad([], $occurences, $minute)
+                    \array_pad([], $occurences, $minute),
                 );
 
-                $schedule = DaysOfWeek::of($list);
+                $schedule = DaysOfWeek::maybe($list)->match(
+                    static fn($schedule) => $schedule,
+                    static fn() => null,
+                );
 
                 $this->assertInstanceOf(DaysOfWeek::class, $schedule);
                 $this->assertSame($list, $schedule->toString());
@@ -70,10 +76,13 @@ class DaysOfWeekTest extends TestCase
         $this
             ->forAll(
                 Set\Integers::between(0, 6),
-                Set\Integers::between(0, 6)
+                Set\Integers::between(0, 6),
             )
             ->then(function($from, $to) {
-                $schedule = DaysOfWeek::of("$from-$to");
+                $schedule = DaysOfWeek::maybe("$from-$to")->match(
+                    static fn($schedule) => $schedule,
+                    static fn() => null,
+                );
 
                 $this->assertInstanceOf(DaysOfWeek::class, $schedule);
                 $this->assertSame("$from-$to", $schedule->toString());
@@ -85,7 +94,10 @@ class DaysOfWeekTest extends TestCase
         $this
             ->forAll(Set\Integers::between(0, 6))
             ->then(function($step) {
-                $schedule = DaysOfWeek::of("*/$step");
+                $schedule = DaysOfWeek::maybe("*/$step")->match(
+                    static fn($schedule) => $schedule,
+                    static fn() => null,
+                );
 
                 $this->assertInstanceOf(DaysOfWeek::class, $schedule);
                 $this->assertSame("*/$step", $schedule->toString());
@@ -98,25 +110,30 @@ class DaysOfWeekTest extends TestCase
             ->forAll(
                 Set\Integers::between(0, 6),
                 Set\Integers::between(0, 6),
-                Set\Integers::between(0, 6)
+                Set\Integers::between(0, 6),
             )
             ->then(function($from, $to, $step) {
-                $schedule = DaysOfWeek::of("$from-$to/$step");
+                $schedule = DaysOfWeek::maybe("$from-$to/$step")->match(
+                    static fn($schedule) => $schedule,
+                    static fn() => null,
+                );
 
                 $this->assertInstanceOf(DaysOfWeek::class, $schedule);
                 $this->assertSame("$from-$to/$step", $schedule->toString());
             });
     }
 
-    public function testThrowExceptionWhenUsingRandomString()
+    public function testReturnNothingWhenUsingRandomString()
     {
         $this
-            ->forAll(Set\Strings::any())
+            ->forAll(Set\Strings::any()->filter(static fn($value) => !\is_numeric($value)))
             ->then(function($value) {
-                $this->expectException(DomainException::class);
-                $this->expectExceptionMessage($value);
+                $schedule = DaysOfWeek::maybe($value)->match(
+                    static fn($schedule) => $schedule,
+                    static fn() => null,
+                );
 
-                DaysOfWeek::of($value);
+                $this->assertNull($schedule);
             });
     }
 }

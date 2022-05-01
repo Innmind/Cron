@@ -6,8 +6,6 @@ namespace Tests\Innmind\Cron;
 use Innmind\Cron\{
     Read,
     Job,
-    Exception\UnableToReadCrontab,
-    Exception\DomainException,
 };
 use Innmind\Server\Control\{
     Server,
@@ -16,7 +14,11 @@ use Innmind\Server\Control\{
     Server\Process\ExitCode,
     Server\Process\Output,
 };
-use Innmind\Immutable\Sequence;
+use Innmind\Immutable\{
+    Sequence,
+    Either,
+    SideEffect,
+};
 use PHPUnit\Framework\TestCase;
 
 class ReadTest extends TestCase
@@ -38,23 +40,28 @@ class ReadTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
         $process
             ->expects($this->once())
             ->method('output')
             ->willReturn($this->crontab());
 
-        $jobs = $read($server);
+        $jobs = $read($server)->match(
+            static fn($jobs) => $jobs,
+            static fn() => null,
+        );
 
         $this->assertInstanceOf(Sequence::class, $jobs);
-        $this->assertSame(Job::class, $jobs->type());
         $this->assertCount(2, $jobs);
-        $this->assertSame('1 2 3 4 5 echo foo', $jobs->first()->toString());
-        $this->assertSame('2 3 4 5 6 echo bar', $jobs->last()->toString());
+        $this->assertSame('1 2 3 4 5 echo foo', $jobs->first()->match(
+            static fn($job) => $job->toString(),
+            static fn() => null,
+        ));
+        $this->assertSame('2 3 4 5 6 echo bar', $jobs->last()->match(
+            static fn($job) => $job->toString(),
+            static fn() => null,
+        ));
     }
 
     public function testReadCrontabForSpecificUser()
@@ -74,51 +81,31 @@ class ReadTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
         $process
             ->expects($this->once())
             ->method('output')
             ->willReturn($this->crontab());
 
-        $jobs = $read($server);
+        $jobs = $read($server)->match(
+            static fn($jobs) => $jobs,
+            static fn() => null,
+        );
 
         $this->assertInstanceOf(Sequence::class, $jobs);
-        $this->assertSame(Job::class, $jobs->type());
         $this->assertCount(2, $jobs);
-        $this->assertSame('1 2 3 4 5 echo foo', $jobs->first()->toString());
-        $this->assertSame('2 3 4 5 6 echo bar', $jobs->last()->toString());
+        $this->assertSame('1 2 3 4 5 echo foo', $jobs->first()->match(
+            static fn($job) => $job->toString(),
+            static fn() => null,
+        ));
+        $this->assertSame('2 3 4 5 6 echo bar', $jobs->last()->match(
+            static fn($job) => $job->toString(),
+            static fn() => null,
+        ));
     }
 
-    public function testThrowWhenFaillingToAccessCrontab()
-    {
-        $read = Read::forConnectedUser();
-        $server = $this->createMock(Server::class);
-        $server
-            ->expects($this->once())
-            ->method('processes')
-            ->willReturn($processes = $this->createMock(Processes::class));
-        $processes
-            ->expects($this->once())
-            ->method('execute')
-            ->willReturn($process = $this->createMock(Process::class));
-        $process
-            ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(1));
-
-        $this->expectException(UnableToReadCrontab::class);
-
-        $read($server);
-    }
-
-    public function testThrowWhenCrontabContainsInvalidJobs()
+    public function testReturnNothingWhenCrontabContainsInvalidJobs()
     {
         $read = Read::forUser('admin');
         $server = $this->createMock(Server::class);
@@ -135,11 +122,8 @@ class ReadTest extends TestCase
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
         $process
             ->expects($this->once())
             ->method('output')
@@ -149,10 +133,39 @@ class ReadTest extends TestCase
             ->method('toString')
             ->willReturn('*');
 
-        $this->expectException(DomainException::class);
-        $this->expectExceptionMessage('*');
+        $this->assertNull($read($server)->match(
+            static fn($jobs) => $jobs,
+            static fn() => null,
+        ));
+    }
 
-        $read($server);
+    public function testReturnNothingWhenProcessToReadTheCrontabFailed()
+    {
+        $read = Read::forUser('admin');
+        $server = $this->createMock(Server::class);
+        $server
+            ->expects($this->once())
+            ->method('processes')
+            ->willReturn($processes = $this->createMock(Processes::class));
+        $processes
+            ->expects($this->once())
+            ->method('execute')
+            ->with($this->callback(static function($command) {
+                return $command->toString() === "crontab '-u' 'admin' '-l'";
+            }))
+            ->willReturn($process = $this->createMock(Process::class));
+        $process
+            ->expects($this->once())
+            ->method('wait')
+            ->willReturn(Either::left(new Process\Failed(new ExitCode(1))));
+        $process
+            ->expects($this->never())
+            ->method('output');
+
+        $this->assertNull($read($server)->match(
+            static fn($jobs) => $jobs,
+            static fn() => null,
+        ));
     }
 
     private function crontab(): Output
