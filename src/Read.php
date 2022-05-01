@@ -67,6 +67,9 @@ final class Read
         );
     }
 
+    /**
+     * @param non-empty-string $user
+     */
     public static function forUser(string $user): self
     {
         return new self(

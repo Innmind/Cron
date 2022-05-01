@@ -61,6 +61,8 @@ final class Crontab
     /**
      * @no-named-arguments
      * @psalm-pure
+     *
+     * @param non-empty-string $user
      */
     public static function forUser(string $user, Job ...$jobs): self
     {
