@@ -133,7 +133,7 @@ final class Schedule
             Hours::at($hour),
             DaysOfMonth::each(),
             Months::each(),
-            DaysOfWeek::at(0),
+            DaysOfWeek::at(1),
         );
     }
 
@@ -148,7 +148,7 @@ final class Schedule
             Hours::at($hour),
             DaysOfMonth::each(),
             Months::each(),
-            DaysOfWeek::at(1),
+            DaysOfWeek::at(2),
         );
     }
 
@@ -163,7 +163,7 @@ final class Schedule
             Hours::at($hour),
             DaysOfMonth::each(),
             Months::each(),
-            DaysOfWeek::at(2),
+            DaysOfWeek::at(3),
         );
     }
 
@@ -178,7 +178,7 @@ final class Schedule
             Hours::at($hour),
             DaysOfMonth::each(),
             Months::each(),
-            DaysOfWeek::at(3),
+            DaysOfWeek::at(4),
         );
     }
 
@@ -193,7 +193,7 @@ final class Schedule
             Hours::at($hour),
             DaysOfMonth::each(),
             Months::each(),
-            DaysOfWeek::at(4),
+            DaysOfWeek::at(5),
         );
     }
 
@@ -208,7 +208,7 @@ final class Schedule
             Hours::at($hour),
             DaysOfMonth::each(),
             Months::each(),
-            DaysOfWeek::at(5),
+            DaysOfWeek::at(6),
         );
     }
 
@@ -223,7 +223,7 @@ final class Schedule
             Hours::at($hour),
             DaysOfMonth::each(),
             Months::each(),
-            DaysOfWeek::at(6),
+            DaysOfWeek::at(0),
         );
     }
 

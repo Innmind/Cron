@@ -127,7 +127,7 @@ class ScheduleTest extends TestCase
                 $schedule = Schedule::everyMondayAt($hour, $minute);
 
                 $this->assertInstanceOf(Schedule::class, $schedule);
-                $this->assertSame("$minute $hour * * 0", $schedule->toString());
+                $this->assertSame("$minute $hour * * 1", $schedule->toString());
             });
     }
 
@@ -142,7 +142,7 @@ class ScheduleTest extends TestCase
                 $schedule = Schedule::everyTuesdayAt($hour, $minute);
 
                 $this->assertInstanceOf(Schedule::class, $schedule);
-                $this->assertSame("$minute $hour * * 1", $schedule->toString());
+                $this->assertSame("$minute $hour * * 2", $schedule->toString());
             });
     }
 
@@ -157,7 +157,7 @@ class ScheduleTest extends TestCase
                 $schedule = Schedule::everyWednesdayAt($hour, $minute);
 
                 $this->assertInstanceOf(Schedule::class, $schedule);
-                $this->assertSame("$minute $hour * * 2", $schedule->toString());
+                $this->assertSame("$minute $hour * * 3", $schedule->toString());
             });
     }
 
@@ -172,7 +172,7 @@ class ScheduleTest extends TestCase
                 $schedule = Schedule::everyThursdayAt($hour, $minute);
 
                 $this->assertInstanceOf(Schedule::class, $schedule);
-                $this->assertSame("$minute $hour * * 3", $schedule->toString());
+                $this->assertSame("$minute $hour * * 4", $schedule->toString());
             });
     }
 
@@ -187,7 +187,7 @@ class ScheduleTest extends TestCase
                 $schedule = Schedule::everyFridayAt($hour, $minute);
 
                 $this->assertInstanceOf(Schedule::class, $schedule);
-                $this->assertSame("$minute $hour * * 4", $schedule->toString());
+                $this->assertSame("$minute $hour * * 5", $schedule->toString());
             });
     }
 
@@ -202,7 +202,7 @@ class ScheduleTest extends TestCase
                 $schedule = Schedule::everySaturdayAt($hour, $minute);
 
                 $this->assertInstanceOf(Schedule::class, $schedule);
-                $this->assertSame("$minute $hour * * 5", $schedule->toString());
+                $this->assertSame("$minute $hour * * 6", $schedule->toString());
             });
     }
 
@@ -217,7 +217,7 @@ class ScheduleTest extends TestCase
                 $schedule = Schedule::everySundayAt($hour, $minute);
 
                 $this->assertInstanceOf(Schedule::class, $schedule);
-                $this->assertSame("$minute $hour * * 6", $schedule->toString());
+                $this->assertSame("$minute $hour * * 0", $schedule->toString());
             });
     }
 
