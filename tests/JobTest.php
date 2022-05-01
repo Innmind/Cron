@@ -40,7 +40,7 @@ class JobTest extends TestCase
             ->then(function($occurences) {
                 $schedule = \implode(' ', \array_pad([], $occurences, '*'));
 
-                $this->assertNull(Job::of("$schedule echo 'foo'")->match(
+                $this->assertNull(Job::maybe("$schedule echo 'foo'")->match(
                     static fn($job) => $job,
                     static fn() => null,
                 ));
@@ -49,7 +49,7 @@ class JobTest extends TestCase
 
     public function testReturnNothingWhenNotEnoughSchedulePartsEvenThoughCommandContainsMoreThanSixParts()
     {
-        $this->assertNull(Job::of('echo foo bar baz foobar foobaz barbaz')->match(
+        $this->assertNull(Job::maybe('echo foo bar baz foobar foobaz barbaz')->match(
             static fn($job) => $job,
             static fn() => null,
         ));
@@ -66,7 +66,7 @@ class JobTest extends TestCase
                 Set\Integers::between(0, 6),
             )
             ->then(function($minute, $hour, $dayOfMonth, $month, $dayOfWeek) {
-                $job = Job::of("$minute $hour $dayOfMonth $month $dayOfWeek echo foo bar baz")->match(
+                $job = Job::maybe("$minute $hour $dayOfMonth $month $dayOfWeek echo foo bar baz")->match(
                     static fn($job) => $job,
                     static fn() => null,
                 );

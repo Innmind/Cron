@@ -22,9 +22,22 @@ final class Job
     }
 
     /**
+     * @param literal-string $value
+     *
+     * @throws \DomainException
+     */
+    public static function of(string $value): self
+    {
+        return self::maybe($value)->match(
+            static fn($self) => $self,
+            static fn() => throw new \DomainException($value),
+        );
+    }
+
+    /**
      * @return Maybe<self>
      */
-    public static function of(string $value): Maybe
+    public static function maybe(string $value): Maybe
     {
         $parts = Str::of($value)
             ->split(' ')
@@ -37,7 +50,7 @@ final class Job
             return Maybe::nothing();
         }
 
-        return Schedule::of(Str::of(' ')->join($parts->take(5))->toString())
+        return Schedule::maybe(Str::of(' ')->join($parts->take(5))->toString())
             ->map(static fn($schedule) => new self(
                 $schedule,
                 Command::foreground($command),

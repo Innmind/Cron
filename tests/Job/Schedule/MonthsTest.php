@@ -24,7 +24,7 @@ class MonthsTest extends TestCase
 
     public function testEachMonthFromRawString()
     {
-        $schedule = Months::of('*')->match(
+        $schedule = Months::maybe('*')->match(
             static fn($schedule) => $schedule,
             static fn() => null,
         );
@@ -38,7 +38,7 @@ class MonthsTest extends TestCase
         $this
             ->forAll(Set\Integers::between(1, 12))
             ->then(function($minute) {
-                $schedule = Months::of((string) $minute)->match(
+                $schedule = Months::maybe((string) $minute)->match(
                     static fn($schedule) => $schedule,
                     static fn() => null,
                 );
@@ -61,7 +61,7 @@ class MonthsTest extends TestCase
                     \array_pad([], $occurences, $minute),
                 );
 
-                $schedule = Months::of($list)->match(
+                $schedule = Months::maybe($list)->match(
                     static fn($schedule) => $schedule,
                     static fn() => null,
                 );
@@ -79,7 +79,7 @@ class MonthsTest extends TestCase
                 Set\Integers::between(1, 12),
             )
             ->then(function($from, $to) {
-                $schedule = Months::of("$from-$to")->match(
+                $schedule = Months::maybe("$from-$to")->match(
                     static fn($schedule) => $schedule,
                     static fn() => null,
                 );
@@ -94,7 +94,7 @@ class MonthsTest extends TestCase
         $this
             ->forAll(Set\Integers::between(1, 12))
             ->then(function($step) {
-                $schedule = Months::of("*/$step")->match(
+                $schedule = Months::maybe("*/$step")->match(
                     static fn($schedule) => $schedule,
                     static fn() => null,
                 );
@@ -113,7 +113,7 @@ class MonthsTest extends TestCase
                 Set\Integers::between(1, 12),
             )
             ->then(function($from, $to, $step) {
-                $schedule = Months::of("$from-$to/$step")->match(
+                $schedule = Months::maybe("$from-$to/$step")->match(
                     static fn($schedule) => $schedule,
                     static fn() => null,
                 );
@@ -128,7 +128,7 @@ class MonthsTest extends TestCase
         $this
             ->forAll(Set\Strings::any()->filter(static fn($value) => !\is_numeric($value)))
             ->then(function($value) {
-                $schedule = Months::of($value)->match(
+                $schedule = Months::maybe($value)->match(
                     static fn($schedule) => $schedule,
                     static fn() => null,
                 );

@@ -15,9 +15,22 @@ final class DaysOfWeek
     }
 
     /**
+     * @param literal-string $value
+     *
+     * @throws \DomainException
+     */
+    public static function of(string $value): self
+    {
+        return self::maybe($value)->match(
+            static fn($self) => $self,
+            static fn() => throw new \DomainException($value),
+        );
+    }
+
+    /**
      * @return Maybe<self>
      */
-    public static function of(string $value): Maybe
+    public static function maybe(string $value): Maybe
     {
         return Maybe::just($value)
             ->filter(new Range('[0-6]'))

@@ -35,7 +35,7 @@ final class Read
                 return !$line->startsWith('#') && !$line->trim()->empty();
             })
             ->map(
-                static fn(Str $line) => Job::of($line->toString()),
+                static fn(Str $line) => Job::maybe($line->toString()),
             );
 
         /**

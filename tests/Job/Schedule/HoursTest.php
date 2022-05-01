@@ -24,7 +24,7 @@ class HoursTest extends TestCase
 
     public function testEachHourFromRawString()
     {
-        $schedule = Hours::of('*')->match(
+        $schedule = Hours::maybe('*')->match(
             static fn($schedule) => $schedule,
             static fn() => null,
         );
@@ -38,7 +38,7 @@ class HoursTest extends TestCase
         $this
             ->forAll(Set\Integers::between(0, 23))
             ->then(function($minute) {
-                $schedule = Hours::of((string) $minute)->match(
+                $schedule = Hours::maybe((string) $minute)->match(
                     static fn($schedule) => $schedule,
                     static fn() => null,
                 );
@@ -61,7 +61,7 @@ class HoursTest extends TestCase
                     \array_pad([], $occurences, $minute),
                 );
 
-                $schedule = Hours::of($list)->match(
+                $schedule = Hours::maybe($list)->match(
                     static fn($schedule) => $schedule,
                     static fn() => null,
                 );
@@ -79,7 +79,7 @@ class HoursTest extends TestCase
                 Set\Integers::between(0, 23),
             )
             ->then(function($from, $to) {
-                $schedule = Hours::of("$from-$to")->match(
+                $schedule = Hours::maybe("$from-$to")->match(
                     static fn($schedule) => $schedule,
                     static fn() => null,
                 );
@@ -94,7 +94,7 @@ class HoursTest extends TestCase
         $this
             ->forAll(Set\Integers::between(0, 23))
             ->then(function($step) {
-                $schedule = Hours::of("*/$step")->match(
+                $schedule = Hours::maybe("*/$step")->match(
                     static fn($schedule) => $schedule,
                     static fn() => null,
                 );
@@ -113,7 +113,7 @@ class HoursTest extends TestCase
                 Set\Integers::between(0, 23),
             )
             ->then(function($from, $to, $step) {
-                $schedule = Hours::of("$from-$to/$step")->match(
+                $schedule = Hours::maybe("$from-$to/$step")->match(
                     static fn($schedule) => $schedule,
                     static fn() => null,
                 );
@@ -128,7 +128,7 @@ class HoursTest extends TestCase
         $this
             ->forAll(Set\Strings::any()->filter(static fn($string) => !\is_numeric($string)))
             ->then(function($value) {
-                $schedule = Hours::of($value)->match(
+                $schedule = Hours::maybe($value)->match(
                     static fn($schedule) => $schedule,
                     static fn() => null,
                 );

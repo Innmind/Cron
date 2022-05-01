@@ -39,9 +39,22 @@ final class Schedule
     }
 
     /**
+     * @param literal-string $value
+     *
+     * @throws \DomainException
+     */
+    public static function of(string $value): self
+    {
+        return self::maybe($value)->match(
+            static fn($self) => $self,
+            static fn() => throw new \DomainException($value),
+        );
+    }
+
+    /**
      * @return Maybe<self>
      */
-    public static function of(string $value): Maybe
+    public static function maybe(string $value): Maybe
     {
         $parts = Str::of($value)->split(' ');
 
@@ -52,19 +65,19 @@ final class Schedule
 
         $minutes = $parts
             ->get(0)
-            ->flatMap(static fn($value) => Minutes::of($value->toString()));
+            ->flatMap(static fn($value) => Minutes::maybe($value->toString()));
         $hours = $parts
             ->get(1)
-            ->flatMap(static fn($value) => Hours::of($value->toString()));
+            ->flatMap(static fn($value) => Hours::maybe($value->toString()));
         $daysOfMonth = $parts
             ->get(2)
-            ->flatMap(static fn($value) => DaysOfMonth::of($value->toString()));
+            ->flatMap(static fn($value) => DaysOfMonth::maybe($value->toString()));
         $months = $parts
             ->get(3)
-            ->flatMap(static fn($value) => Months::of($value->toString()));
+            ->flatMap(static fn($value) => Months::maybe($value->toString()));
         $daysOfWeek = $parts
             ->get(4)
-            ->flatMap(static fn($value) => DaysOfWeek::of($value->toString()));
+            ->flatMap(static fn($value) => DaysOfWeek::maybe($value->toString()));
 
         return Maybe::all($minutes, $hours, $daysOfMonth, $months, $daysOfWeek)
             ->map(static fn(

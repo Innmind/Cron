@@ -46,7 +46,7 @@ class ScheduleTest extends TestCase
      */
     public function testScheduleFromRawString($value)
     {
-        $schedule = Schedule::of($value)->match(
+        $schedule = Schedule::maybe($value)->match(
             static fn($schedule) => $schedule,
             static fn() => null,
         );
@@ -62,7 +62,7 @@ class ScheduleTest extends TestCase
             ->then(function($int) {
                 $string = \implode(' ', \array_pad([], $int, '*'));
 
-                $this->assertNull(Schedule::of($string)->match(
+                $this->assertNull(Schedule::maybe($string)->match(
                     static fn($schedule) => $schedule,
                     static fn() => null,
                 ));
@@ -74,7 +74,7 @@ class ScheduleTest extends TestCase
         $this
             ->forAll(Set\Strings::any())
             ->then(function($string) {
-                $this->assertNull(Schedule::of($string)->match(
+                $this->assertNull(Schedule::maybe($string)->match(
                     static fn($schedule) => $schedule,
                     static fn() => null,
                 ));
