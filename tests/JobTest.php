@@ -6,7 +6,6 @@ namespace Tests\Innmind\Cron;
 use Innmind\Cron\{
     Job,
     Job\Schedule,
-    Exception\DomainException,
 };
 use Innmind\Server\Control\Server\Command;
 use Innmind\Url\Path;
@@ -26,34 +25,34 @@ class JobTest extends TestCase
     public function testStringCast($expected, $command)
     {
         $this->assertSame(
-            "1 2 3 4 5 $expected",
+            "* * * * * $expected",
             (new Job(
-                Schedule::of('1 2 3 4 5'),
-                $command
+                Schedule::everyMinute(),
+                $command,
             ))->toString(),
         );
     }
 
-    public function testThrowWhenNotEnoughScheduleParts()
+    public function testReturnNothingWhenNotEnoughScheduleParts()
     {
         $this
             ->forAll(Set\Integers::between(0, 4))
             ->then(function($occurences) {
                 $schedule = \implode(' ', \array_pad([], $occurences, '*'));
 
-                $this->expectException(DomainException::class);
-                $this->expectExceptionMessage("$schedule echo 'foo'");
-
-                Job::of("$schedule echo 'foo'");
+                $this->assertNull(Job::maybe("$schedule echo 'foo'")->match(
+                    static fn($job) => $job,
+                    static fn() => null,
+                ));
             });
     }
 
-    public function testThrowWhenNotEnoughSchedulePartsEvenThoughCommandContainsMoreThanSixParts()
+    public function testReturnNothingWhenNotEnoughSchedulePartsEvenThoughCommandContainsMoreThanSixParts()
     {
-        $this->expectException(DomainException::class);
-        $this->expectExceptionMessage('echo foo bar baz foobar foobaz barbaz');
-
-        Job::of('echo foo bar baz foobar foobaz barbaz');
+        $this->assertNull(Job::maybe('echo foo bar baz foobar foobaz barbaz')->match(
+            static fn($job) => $job,
+            static fn() => null,
+        ));
     }
 
     public function testFromRawString()
@@ -64,10 +63,13 @@ class JobTest extends TestCase
                 Set\Integers::between(0, 23),
                 Set\Integers::between(1, 31),
                 Set\Integers::between(1, 12),
-                Set\Integers::between(0, 6)
+                Set\Integers::between(0, 6),
             )
             ->then(function($minute, $hour, $dayOfMonth, $month, $dayOfWeek) {
-                $job = Job::of("$minute $hour $dayOfMonth $month $dayOfWeek echo foo bar baz");
+                $job = Job::maybe("$minute $hour $dayOfMonth $month $dayOfWeek echo foo bar baz")->match(
+                    static fn($job) => $job,
+                    static fn() => null,
+                );
 
                 $this->assertInstanceOf(Job::class, $job);
                 $this->assertSame(

@@ -7,18 +7,26 @@ use Innmind\Server\Control\{
     Server,
     Server\Command,
     Server\Script,
+    ScriptFailed,
 };
-use Innmind\Immutable\Sequence;
-use function Innmind\Immutable\join;
+use Innmind\Immutable\{
+    Sequence,
+    Str,
+    SideEffect,
+    Either,
+};
 
 final class Crontab
 {
     private Command $command;
 
+    /**
+     * @no-named-arguments
+     * @psalm-mutation-free
+     */
     private function __construct(Command $command, Job ...$jobs)
     {
-        $jobs = Sequence::of(Job::class, ...$jobs)->mapTo(
-            'string',
+        $jobs = Sequence::of(...$jobs)->map(
             static fn(Job $job): string => $job->toString(),
         );
 
@@ -26,23 +34,36 @@ final class Crontab
             $this->command = $command->withShortOption('r');
         } else {
             $this->command = Command::foreground('echo')
-                ->withArgument(join("\n", $jobs)->toString())
+                ->withArgument(Str::of("\n")->join($jobs)->toString())
                 ->pipe($command);
         }
     }
 
-    public function __invoke(Server $server): void
+    /**
+     * @return Either<ScriptFailed, SideEffect>
+     */
+    public function __invoke(Server $server): Either
     {
         $installOn = new Script($this->command);
 
-        $installOn($server);
+        return $installOn($server);
     }
 
+    /**
+     * @no-named-arguments
+     * @psalm-pure
+     */
     public static function forConnectedUser(Job ...$jobs): self
     {
         return new self(Command::foreground('crontab'), ...$jobs);
     }
 
+    /**
+     * @no-named-arguments
+     * @psalm-pure
+     *
+     * @param non-empty-string $user
+     */
     public static function forUser(string $user, Job ...$jobs): self
     {
         return new self(
