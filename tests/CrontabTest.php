@@ -12,6 +12,7 @@ use Innmind\Server\Control\{
     Server\Processes,
     Server\Process,
     Server\Process\ExitCode,
+    Server\Process\Output,
     ScriptFailed,
 };
 use Innmind\Immutable\{
@@ -140,7 +141,10 @@ class CrontabTest extends TestCase
         $process
             ->expects($this->once())
             ->method('wait')
-            ->willReturn(Either::left(new Process\Failed(new ExitCode(1))));
+            ->willReturn(Either::left(new Process\Failed(
+                new ExitCode(1),
+                $this->createMock(Output::class),
+            )));
 
         $error = $crontab($server)->match(
             static fn() => null,

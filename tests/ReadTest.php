@@ -157,7 +157,10 @@ class ReadTest extends TestCase
         $process
             ->expects($this->once())
             ->method('wait')
-            ->willReturn(Either::left(new Process\Failed(new ExitCode(1))));
+            ->willReturn(Either::left(new Process\Failed(
+                new ExitCode(1),
+                $this->createMock(Output::class),
+            )));
         $process
             ->expects($this->never())
             ->method('output');
