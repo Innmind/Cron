@@ -221,7 +221,7 @@ class ScheduleTest extends TestCase
             });
     }
 
-    public function schedules(): array
+    public static function schedules(): array
     {
         return [
             ['* * * * *'],

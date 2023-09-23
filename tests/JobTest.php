@@ -79,7 +79,7 @@ class JobTest extends TestCase
             });
     }
 
-    public function commands(): array
+    public static function commands(): array
     {
         return [
             [
