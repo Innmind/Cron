@@ -42,6 +42,7 @@ final class Range
 
         // stepped
         if ($value->contains('/')) {
+            /** @psalm-suppress PossiblyUndefinedArrayOffset */
             [$hours, $step] = $value->split('/')->toList();
 
             // validate $hours format
