@@ -3,10 +3,7 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Cron\Job;
 
-use Innmind\Cron\{
-    Job\Schedule,
-    Exception\DomainException,
-};
+use Innmind\Cron\Job\Schedule;
 use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
     PHPUnit\BlackBox,

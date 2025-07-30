@@ -3,10 +3,7 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Cron;
 
-use Innmind\Cron\{
-    Read,
-    Job,
-};
+use Innmind\Cron\Read;
 use Innmind\Server\Control\{
     Server,
     Server\Processes,
