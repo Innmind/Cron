@@ -18,11 +18,11 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Set\Integers::between(0, 59),
-                Set\Integers::between(0, 23),
-                Set\Integers::between(1, 31),
-                Set\Integers::between(1, 12),
-                Set\Integers::between(0, 6),
+                Set::integers()->between(0, 59),
+                Set::integers()->between(0, 23),
+                Set::integers()->between(1, 31),
+                Set::integers()->between(1, 12),
+                Set::integers()->between(0, 6),
             )
             ->then(function($minute, $hour, $dayOfMonth, $month, $dayOfWeek) {
                 $this->assertSame(
@@ -55,7 +55,7 @@ class ScheduleTest extends TestCase
     public function testReturnNothingNotCorrectNumberOfParts()
     {
         $this
-            ->forAll(Set\Integers::between(0, 100)->filter(static fn($int) => $int !== 5))
+            ->forAll(Set::integers()->between(0, 100)->filter(static fn($int) => $int !== 5))
             ->then(function($int) {
                 $string = \implode(' ', \array_pad([], $int, '*'));
 
@@ -89,7 +89,7 @@ class ScheduleTest extends TestCase
     public function testEveryHourAt()
     {
         $this
-            ->forAll(Set\Integers::between(0, 59))
+            ->forAll(Set::integers()->between(0, 59))
             ->then(function($minute) {
                 $schedule = Schedule::everyHourAt($minute);
 
@@ -102,8 +102,8 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Set\Integers::between(0, 59),
-                Set\Integers::between(0, 23),
+                Set::integers()->between(0, 59),
+                Set::integers()->between(0, 23),
             )
             ->then(function($minute, $hour) {
                 $schedule = Schedule::everyDayAt($hour, $minute);
@@ -117,8 +117,8 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Set\Integers::between(0, 59),
-                Set\Integers::between(0, 23),
+                Set::integers()->between(0, 59),
+                Set::integers()->between(0, 23),
             )
             ->then(function($minute, $hour) {
                 $schedule = Schedule::everyMondayAt($hour, $minute);
@@ -132,8 +132,8 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Set\Integers::between(0, 59),
-                Set\Integers::between(0, 23),
+                Set::integers()->between(0, 59),
+                Set::integers()->between(0, 23),
             )
             ->then(function($minute, $hour) {
                 $schedule = Schedule::everyTuesdayAt($hour, $minute);
@@ -147,8 +147,8 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Set\Integers::between(0, 59),
-                Set\Integers::between(0, 23),
+                Set::integers()->between(0, 59),
+                Set::integers()->between(0, 23),
             )
             ->then(function($minute, $hour) {
                 $schedule = Schedule::everyWednesdayAt($hour, $minute);
@@ -162,8 +162,8 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Set\Integers::between(0, 59),
-                Set\Integers::between(0, 23),
+                Set::integers()->between(0, 59),
+                Set::integers()->between(0, 23),
             )
             ->then(function($minute, $hour) {
                 $schedule = Schedule::everyThursdayAt($hour, $minute);
@@ -177,8 +177,8 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Set\Integers::between(0, 59),
-                Set\Integers::between(0, 23),
+                Set::integers()->between(0, 59),
+                Set::integers()->between(0, 23),
             )
             ->then(function($minute, $hour) {
                 $schedule = Schedule::everyFridayAt($hour, $minute);
@@ -192,8 +192,8 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Set\Integers::between(0, 59),
-                Set\Integers::between(0, 23),
+                Set::integers()->between(0, 59),
+                Set::integers()->between(0, 23),
             )
             ->then(function($minute, $hour) {
                 $schedule = Schedule::everySaturdayAt($hour, $minute);
@@ -207,8 +207,8 @@ class ScheduleTest extends TestCase
     {
         $this
             ->forAll(
-                Set\Integers::between(0, 59),
-                Set\Integers::between(0, 23),
+                Set::integers()->between(0, 59),
+                Set::integers()->between(0, 23),
             )
             ->then(function($minute, $hour) {
                 $schedule = Schedule::everySundayAt($hour, $minute);
