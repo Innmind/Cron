@@ -36,7 +36,7 @@ class JobTest extends TestCase
     public function testReturnNothingWhenNotEnoughScheduleParts()
     {
         $this
-            ->forAll(Set\Integers::between(0, 4))
+            ->forAll(Set::integers()->between(0, 4))
             ->then(function($occurences) {
                 $schedule = \implode(' ', \array_pad([], $occurences, '*'));
 
@@ -59,11 +59,11 @@ class JobTest extends TestCase
     {
         $this
             ->forAll(
-                Set\Integers::between(0, 59),
-                Set\Integers::between(0, 23),
-                Set\Integers::between(1, 31),
-                Set\Integers::between(1, 12),
-                Set\Integers::between(0, 6),
+                Set::integers()->between(0, 59),
+                Set::integers()->between(0, 23),
+                Set::integers()->between(1, 31),
+                Set::integers()->between(1, 12),
+                Set::integers()->between(0, 6),
             )
             ->then(function($minute, $hour, $dayOfMonth, $month, $dayOfWeek) {
                 $job = Job::maybe("$minute $hour $dayOfMonth $month $dayOfWeek echo foo bar baz")->match(

@@ -36,7 +36,7 @@ class MinutesTest extends TestCase
     public function testPreciseMinuteFromRawString()
     {
         $this
-            ->forAll(Set\Integers::between(0, 59))
+            ->forAll(Set::integers()->between(0, 59))
             ->then(function($minute) {
                 $schedule = Minutes::maybe((string) $minute)->match(
                     static fn($schedule) => $schedule,
@@ -52,8 +52,8 @@ class MinutesTest extends TestCase
     {
         $this
             ->forAll(
-                Set\Integers::between(0, 59),
-                Set\Integers::between(1, 59),
+                Set::integers()->between(0, 59),
+                Set::integers()->between(1, 59),
             )
             ->then(function($minute, $occurences) {
                 $list = \implode(
@@ -75,8 +75,8 @@ class MinutesTest extends TestCase
     {
         $this
             ->forAll(
-                Set\Integers::between(0, 59),
-                Set\Integers::between(0, 59),
+                Set::integers()->between(0, 59),
+                Set::integers()->between(0, 59),
             )
             ->then(function($from, $to) {
                 $schedule = Minutes::maybe("$from-$to")->match(
@@ -92,7 +92,7 @@ class MinutesTest extends TestCase
     public function testEachMinuteSteppedFromRawString()
     {
         $this
-            ->forAll(Set\Integers::between(0, 59))
+            ->forAll(Set::integers()->between(0, 59))
             ->then(function($step) {
                 $schedule = Minutes::maybe("*/$step")->match(
                     static fn($schedule) => $schedule,
@@ -108,9 +108,9 @@ class MinutesTest extends TestCase
     {
         $this
             ->forAll(
-                Set\Integers::between(0, 59),
-                Set\Integers::between(0, 59),
-                Set\Integers::between(0, 59),
+                Set::integers()->between(0, 59),
+                Set::integers()->between(0, 59),
+                Set::integers()->between(0, 59),
             )
             ->then(function($from, $to, $step) {
                 $schedule = Minutes::maybe("$from-$to/$step")->match(
@@ -126,7 +126,7 @@ class MinutesTest extends TestCase
     public function testReturnNothingWhenUsingRandomString()
     {
         $this
-            ->forAll(Set\Strings::any()->filter(static fn($value) => !\is_numeric($value)))
+            ->forAll(Set::strings()->filter(static fn($value) => !\is_numeric($value)))
             ->then(function($value) {
                 $schedule = Minutes::maybe($value)->match(
                     static fn($schedule) => $schedule,

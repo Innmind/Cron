@@ -36,7 +36,7 @@ class MonthsTest extends TestCase
     public function testPreciseMonthFromRawString()
     {
         $this
-            ->forAll(Set\Integers::between(1, 12))
+            ->forAll(Set::integers()->between(1, 12))
             ->then(function($minute) {
                 $schedule = Months::maybe((string) $minute)->match(
                     static fn($schedule) => $schedule,
@@ -52,8 +52,8 @@ class MonthsTest extends TestCase
     {
         $this
             ->forAll(
-                Set\Integers::between(1, 12),
-                Set\Integers::between(1, 12),
+                Set::integers()->between(1, 12),
+                Set::integers()->between(1, 12),
             )
             ->then(function($minute, $occurences) {
                 $list = \implode(
@@ -75,8 +75,8 @@ class MonthsTest extends TestCase
     {
         $this
             ->forAll(
-                Set\Integers::between(1, 12),
-                Set\Integers::between(1, 12),
+                Set::integers()->between(1, 12),
+                Set::integers()->between(1, 12),
             )
             ->then(function($from, $to) {
                 $schedule = Months::maybe("$from-$to")->match(
@@ -92,7 +92,7 @@ class MonthsTest extends TestCase
     public function testEachMonthSteppedFromRawString()
     {
         $this
-            ->forAll(Set\Integers::between(1, 12))
+            ->forAll(Set::integers()->between(1, 12))
             ->then(function($step) {
                 $schedule = Months::maybe("*/$step")->match(
                     static fn($schedule) => $schedule,
@@ -108,9 +108,9 @@ class MonthsTest extends TestCase
     {
         $this
             ->forAll(
-                Set\Integers::between(1, 12),
-                Set\Integers::between(1, 12),
-                Set\Integers::between(1, 12),
+                Set::integers()->between(1, 12),
+                Set::integers()->between(1, 12),
+                Set::integers()->between(1, 12),
             )
             ->then(function($from, $to, $step) {
                 $schedule = Months::maybe("$from-$to/$step")->match(
@@ -126,7 +126,7 @@ class MonthsTest extends TestCase
     public function testReturnNothingWhenUsingRandomString()
     {
         $this
-            ->forAll(Set\Strings::any()->filter(static fn($value) => !\is_numeric($value)))
+            ->forAll(Set::strings()->filter(static fn($value) => !\is_numeric($value)))
             ->then(function($value) {
                 $schedule = Months::maybe($value)->match(
                     static fn($schedule) => $schedule,
