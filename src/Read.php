@@ -11,6 +11,7 @@ use Innmind\Immutable\{
     Sequence,
     Str,
     Maybe,
+    Monoid\Concat,
 };
 
 final class Read
@@ -27,7 +28,7 @@ final class Read
      */
     public function __invoke(Server $server): Maybe
     {
-        $process = $server->processes()->execute($this->command);
+        $process = $server->processes()->execute($this->command)->unwrap();
         $success = $process->wait()->match(
             static fn() => true,
             static fn() => false,
@@ -38,7 +39,10 @@ final class Read
             return Maybe::nothing();
         }
 
-        $jobs = Str::of($process->output()->toString())
+        $jobs = $process
+            ->output()
+            ->map(static fn($chunk) => $chunk->data())
+            ->fold(new Concat)
             ->split("\n")
             ->filter(static function(Str $line): bool {
                 return !$line->startsWith('#') && !$line->trim()->empty();

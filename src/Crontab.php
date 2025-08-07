@@ -7,13 +7,12 @@ use Innmind\Server\Control\{
     Server,
     Server\Command,
     Server\Script,
-    ScriptFailed,
 };
 use Innmind\Immutable\{
     Sequence,
     Str,
     SideEffect,
-    Either,
+    Attempt,
 };
 
 final class Crontab
@@ -40,11 +39,11 @@ final class Crontab
     }
 
     /**
-     * @return Either<ScriptFailed, SideEffect>
+     * @return Attempt<SideEffect>
      */
-    public function __invoke(Server $server): Either
+    public function __invoke(Server $server): Attempt
     {
-        $installOn = new Script($this->command);
+        $installOn = Script::of($this->command);
 
         return $installOn($server);
     }
