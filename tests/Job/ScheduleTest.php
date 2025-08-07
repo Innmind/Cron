@@ -4,11 +4,12 @@ declare(strict_types = 1);
 namespace Tests\Innmind\Cron\Job;
 
 use Innmind\Cron\Job\Schedule;
-use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
     PHPUnit\BlackBox,
+    PHPUnit\Framework\TestCase,
     Set,
 };
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ScheduleTest extends TestCase
 {
@@ -38,9 +39,7 @@ class ScheduleTest extends TestCase
             });
     }
 
-    /**
-     * @dataProvider schedules
-     */
+    #[DataProvider('schedules')]
     public function testScheduleFromRawString($value)
     {
         $schedule = Schedule::maybe($value)->match(

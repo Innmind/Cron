@@ -9,19 +9,18 @@ use Innmind\Cron\{
 };
 use Innmind\Server\Control\Server\Command;
 use Innmind\Url\Path;
-use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
     PHPUnit\BlackBox,
+    PHPUnit\Framework\TestCase,
     Set,
 };
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class JobTest extends TestCase
 {
     use BlackBox;
 
-    /**
-     * @dataProvider commands
-     */
+    #[DataProvider('commands')]
     public function testStringCast($expected, $command)
     {
         $this->assertSame(
