@@ -6,7 +6,8 @@
 
 Library to help manage crontabs of a machine
 
-**Important**: to correctly use this library you must validate your code with [`vimeo/psalm`](https://packagist.org/packages/vimeo/psalm)
+> [!IMPORTANT]
+> To correctly use this library you must validate your code with [`vimeo/psalm`](https://packagist.org/packages/vimeo/psalm)
 
 ## Installation
 
@@ -32,7 +33,7 @@ $install = Crontab::forConnectedUser(
     Job::of('* * * * * say hello'),
     Job::of('*/2 * * * * say world'),
 );
-$install($os->control());
+$install($os->control())->unwrap();
 // this is the same as running "echo '* * * * * say hello' | crontab" in your terminal
 ```
 
@@ -44,9 +45,8 @@ use Innmind\Cron\{
     Job,
 };
 use Innmind\OperatingSystem\Factory;
-use Innmind\Server\Control\ScriptFailed;
 use Innmind\Immutable\{
-    Either,
+    Attempt,
     SideEffect,
 };
 
@@ -55,7 +55,7 @@ $install = Crontab::forUser(
     'watev',
     Job::of('* * * * * say hello'),
 );
-$install($os->control()); // Either<ScriptFailed, SideEffect>
+$install($os->control()); // Attempt<SideEffect>
 // this is the same as running "echo '* * * * * say hello' | crontab -u admin" in your terminal
 ```
 
@@ -76,10 +76,11 @@ $install = Crontab::forUser(
 );
 $install(
     $os->remote()->ssh(Url::of('ssh://example.com')),
-);
+)->unwrap();
 ```
 
-**Note**: At the moment the library does **not** support adding comments and spaces in the crontab.
+> [!NOTE]
+> At the moment the library does **not** support adding comments and spaces in the crontab.
 
 ### Reading a crontab
 
@@ -92,14 +93,14 @@ use Innmind\Cron\{
 };
 use Innmind\OperatingSystem\Factory;
 use Innmind\Immutable\{
-    Maybe,
+    Attempt,
     Sequence,
 };
 
 $os = Factory::build();
 $read = Read::forConnectedUser();
 $jobs = $read($os->control()); // it will run "crontab -l"
-// $jobs is an instance of Maybe<Sequence<Job>>
+// $jobs is an instance of Attempt<Sequence<Job>>
 ```
 
 For a specific user :
@@ -111,14 +112,15 @@ use Innmind\Cron\{
 };
 use Innmind\OperatingSystem\Factory;
 use Innmind\Immutable\{
-    Maybe,
+    Attempt,
     Sequence,
 };
 
 $os = Factory::build();
 $read = Read::forUser('watev');
 $jobs = $read($os->control()); // it will run "crontab -u watev -l"
-// $jobs is an instance of Maybe<Sequence<Job>>
+// $jobs is an instance of Attempt<Sequence<Job>>
 ```
 
-**Note**: At the moment comments and spaces are not listed in the `$jobs` variable.
+> [!NOTE]
+> At the moment comments and spaces are not listed in the `$jobs` variable.
