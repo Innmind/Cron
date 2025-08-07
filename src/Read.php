@@ -43,7 +43,7 @@ final class Read
                     ->fold(new Concat)
                     ->split("\n")
                     ->filter(static fn($line) => !$line->startsWith('#') && !$line->trim()->empty())
-                    ->map(static fn($line) => Job::maybe($line->toString())),
+                    ->map(static fn($line) => Job::attempt($line->toString())),
             )
             ->flatMap(self::parse(...));
 
@@ -80,7 +80,7 @@ final class Read
     }
 
     /**
-     * @param Sequence<Maybe<Job>> $jobs
+     * @param Sequence<Attempt<Job>> $jobs
      *
      * @return Attempt<Sequence<Job>>
      */
@@ -91,7 +91,6 @@ final class Read
 
         return $jobs
             ->sink($parsed)
-            ->maybe(static fn($parsed, $job) => $job->map($parsed))
-            ->attempt(static fn() => new \RuntimeException('Failed to parse job'));
+            ->attempt(static fn($parsed, $job) => $job->map($parsed));
     }
 }
