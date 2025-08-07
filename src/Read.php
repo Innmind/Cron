@@ -9,8 +9,9 @@ use Innmind\Server\Control\{
 };
 use Innmind\Immutable\{
     Sequence,
-    Str,
+    Attempt,
     Maybe,
+    Monoid\Concat,
 };
 
 final class Read
@@ -23,29 +24,28 @@ final class Read
     }
 
     /**
-     * @return Maybe<Sequence<Job>> Returns nothing when unable to read the crontab
+     * @return Attempt<Sequence<Job>>
      */
-    public function __invoke(Server $server): Maybe
+    public function __invoke(Server $server): Attempt
     {
-        $process = $server->processes()->execute($this->command);
-        $success = $process->wait()->match(
-            static fn() => true,
-            static fn() => false,
-        );
-
-        if (!$success) {
-            /** @var Maybe<Sequence<Job>> */
-            return Maybe::nothing();
-        }
-
-        $jobs = Str::of($process->output()->toString())
-            ->split("\n")
-            ->filter(static function(Str $line): bool {
-                return !$line->startsWith('#') && !$line->trim()->empty();
-            })
+        return $server
+            ->processes()
+            ->execute($this->command)
+            ->flatMap(
+                static fn($process) => $process
+                    ->wait()
+                    ->attempt(static fn($error) => new \RuntimeException($error::class)),
+            )
             ->map(
-                static fn(Str $line) => Job::maybe($line->toString()),
-            );
+                static fn($success) => $success
+                    ->output()
+                    ->map(static fn($chunk) => $chunk->data())
+                    ->fold(new Concat)
+                    ->split("\n")
+                    ->filter(static fn($line) => !$line->startsWith('#') && !$line->trim()->empty())
+                    ->map(static fn($line) => Job::attempt($line->toString())),
+            )
+            ->flatMap(self::parse(...));
 
         /**
          * @psalm-suppress NamedArgumentNotAllowed
@@ -77,5 +77,20 @@ final class Read
                 ->withShortOption('u', $user)
                 ->withShortOption('l'),
         );
+    }
+
+    /**
+     * @param Sequence<Attempt<Job>> $jobs
+     *
+     * @return Attempt<Sequence<Job>>
+     */
+    private static function parse(Sequence $jobs): Attempt
+    {
+        /** @var Sequence<Job> */
+        $parsed = Sequence::of();
+
+        return $jobs
+            ->sink($parsed)
+            ->attempt(static fn($parsed, $job) => $job->map($parsed));
     }
 }

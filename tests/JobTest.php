@@ -9,19 +9,18 @@ use Innmind\Cron\{
 };
 use Innmind\Server\Control\Server\Command;
 use Innmind\Url\Path;
-use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
     PHPUnit\BlackBox,
+    PHPUnit\Framework\TestCase,
     Set,
 };
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class JobTest extends TestCase
 {
     use BlackBox;
 
-    /**
-     * @dataProvider commands
-     */
+    #[DataProvider('commands')]
     public function testStringCast($expected, $command)
     {
         $this->assertSame(
@@ -36,7 +35,7 @@ class JobTest extends TestCase
     public function testReturnNothingWhenNotEnoughScheduleParts()
     {
         $this
-            ->forAll(Set\Integers::between(0, 4))
+            ->forAll(Set::integers()->between(0, 4))
             ->then(function($occurences) {
                 $schedule = \implode(' ', \array_pad([], $occurences, '*'));
 
@@ -59,11 +58,11 @@ class JobTest extends TestCase
     {
         $this
             ->forAll(
-                Set\Integers::between(0, 59),
-                Set\Integers::between(0, 23),
-                Set\Integers::between(1, 31),
-                Set\Integers::between(1, 12),
-                Set\Integers::between(0, 6),
+                Set::integers()->between(0, 59),
+                Set::integers()->between(0, 23),
+                Set::integers()->between(1, 31),
+                Set::integers()->between(1, 12),
+                Set::integers()->between(0, 6),
             )
             ->then(function($minute, $hour, $dayOfMonth, $month, $dayOfWeek) {
                 $job = Job::maybe("$minute $hour $dayOfMonth $month $dayOfWeek echo foo bar baz")->match(

@@ -4,9 +4,9 @@ declare(strict_types = 1);
 namespace Tests\Innmind\Cron\Job\Schedule;
 
 use Innmind\Cron\Job\Schedule\DaysOfMonth;
-use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
     PHPUnit\BlackBox,
+    PHPUnit\Framework\TestCase,
     Set,
 };
 
@@ -36,7 +36,7 @@ class DaysOfMonthTest extends TestCase
     public function testPreciseDayOfMonthFromRawString()
     {
         $this
-            ->forAll(Set\Integers::between(0, 31))
+            ->forAll(Set::integers()->between(0, 31))
             ->then(function($minute) {
                 $schedule = DaysOfMonth::maybe((string) $minute)->match(
                     static fn($schedule) => $schedule,
@@ -52,8 +52,8 @@ class DaysOfMonthTest extends TestCase
     {
         $this
             ->forAll(
-                Set\Integers::between(0, 31),
-                Set\Integers::between(1, 31),
+                Set::integers()->between(0, 31),
+                Set::integers()->between(1, 31),
             )
             ->then(function($minute, $occurences) {
                 $list = \implode(
@@ -75,8 +75,8 @@ class DaysOfMonthTest extends TestCase
     {
         $this
             ->forAll(
-                Set\Integers::between(0, 31),
-                Set\Integers::between(0, 31),
+                Set::integers()->between(0, 31),
+                Set::integers()->between(0, 31),
             )
             ->then(function($from, $to) {
                 $schedule = DaysOfMonth::maybe("$from-$to")->match(
@@ -92,7 +92,7 @@ class DaysOfMonthTest extends TestCase
     public function testEachDaysOfMonthteppedFromRawString()
     {
         $this
-            ->forAll(Set\Integers::between(0, 31))
+            ->forAll(Set::integers()->between(0, 31))
             ->then(function($step) {
                 $schedule = DaysOfMonth::maybe("*/$step")->match(
                     static fn($schedule) => $schedule,
@@ -108,9 +108,9 @@ class DaysOfMonthTest extends TestCase
     {
         $this
             ->forAll(
-                Set\Integers::between(0, 31),
-                Set\Integers::between(0, 31),
-                Set\Integers::between(0, 31),
+                Set::integers()->between(0, 31),
+                Set::integers()->between(0, 31),
+                Set::integers()->between(0, 31),
             )
             ->then(function($from, $to, $step) {
                 $schedule = DaysOfMonth::maybe("$from-$to/$step")->match(
@@ -126,7 +126,11 @@ class DaysOfMonthTest extends TestCase
     public function testReturnNothingWhenUsingRandomString()
     {
         $this
-            ->forAll(Set\Strings::any()->filter(static fn($value) => !\is_numeric($value)))
+            ->forAll(
+                Set::strings()
+                    ->filter(static fn($value) => !\is_numeric($value))
+                    ->filter(static fn($value) => $value !== '*'),
+            )
             ->then(function($value) {
                 $schedule = DaysOfMonth::maybe($value)->match(
                     static fn($schedule) => $schedule,

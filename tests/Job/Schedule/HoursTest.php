@@ -4,9 +4,9 @@ declare(strict_types = 1);
 namespace Tests\Innmind\Cron\Job\Schedule;
 
 use Innmind\Cron\Job\Schedule\Hours;
-use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
     PHPUnit\BlackBox,
+    PHPUnit\Framework\TestCase,
     Set,
 };
 
@@ -36,7 +36,7 @@ class HoursTest extends TestCase
     public function testPreciseHourFromRawString()
     {
         $this
-            ->forAll(Set\Integers::between(0, 23))
+            ->forAll(Set::integers()->between(0, 23))
             ->then(function($minute) {
                 $schedule = Hours::maybe((string) $minute)->match(
                     static fn($schedule) => $schedule,
@@ -52,8 +52,8 @@ class HoursTest extends TestCase
     {
         $this
             ->forAll(
-                Set\Integers::between(0, 23),
-                Set\Integers::between(1, 23),
+                Set::integers()->between(0, 23),
+                Set::integers()->between(1, 23),
             )
             ->then(function($minute, $occurences) {
                 $list = \implode(
@@ -75,8 +75,8 @@ class HoursTest extends TestCase
     {
         $this
             ->forAll(
-                Set\Integers::between(0, 23),
-                Set\Integers::between(0, 23),
+                Set::integers()->between(0, 23),
+                Set::integers()->between(0, 23),
             )
             ->then(function($from, $to) {
                 $schedule = Hours::maybe("$from-$to")->match(
@@ -92,7 +92,7 @@ class HoursTest extends TestCase
     public function testEachHourSteppedFromRawString()
     {
         $this
-            ->forAll(Set\Integers::between(0, 23))
+            ->forAll(Set::integers()->between(0, 23))
             ->then(function($step) {
                 $schedule = Hours::maybe("*/$step")->match(
                     static fn($schedule) => $schedule,
@@ -108,9 +108,9 @@ class HoursTest extends TestCase
     {
         $this
             ->forAll(
-                Set\Integers::between(0, 23),
-                Set\Integers::between(0, 23),
-                Set\Integers::between(0, 23),
+                Set::integers()->between(0, 23),
+                Set::integers()->between(0, 23),
+                Set::integers()->between(0, 23),
             )
             ->then(function($from, $to, $step) {
                 $schedule = Hours::maybe("$from-$to/$step")->match(
@@ -126,7 +126,11 @@ class HoursTest extends TestCase
     public function testReturnNothingWhenUsingRandomString()
     {
         $this
-            ->forAll(Set\Strings::any()->filter(static fn($string) => !\is_numeric($string)))
+            ->forAll(
+                Set::strings()
+                    ->filter(static fn($value) => !\is_numeric($value))
+                    ->filter(static fn($value) => $value !== '*'),
+            )
             ->then(function($value) {
                 $schedule = Hours::maybe($value)->match(
                     static fn($schedule) => $schedule,
