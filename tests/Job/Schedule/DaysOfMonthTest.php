@@ -126,7 +126,11 @@ class DaysOfMonthTest extends TestCase
     public function testReturnNothingWhenUsingRandomString()
     {
         $this
-            ->forAll(Set::strings()->filter(static fn($value) => !\is_numeric($value)))
+            ->forAll(
+                Set::strings()
+                    ->filter(static fn($value) => !\is_numeric($value))
+                    ->filter(static fn($value) => $value !== '*'),
+            )
             ->then(function($value) {
                 $schedule = DaysOfMonth::maybe($value)->match(
                     static fn($schedule) => $schedule,
