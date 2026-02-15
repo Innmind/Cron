@@ -11,11 +11,8 @@ use Innmind\Immutable\Str;
  */
 final class Range
 {
-    private string $pattern;
-
-    public function __construct(string $pattern)
+    public function __construct(private string $pattern)
     {
-        $this->pattern = $pattern;
     }
 
     #[\NoDiscard]

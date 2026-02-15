@@ -16,11 +16,8 @@ use Innmind\Immutable\{
 
 final class Read
 {
-    private Command $command;
-
-    private function __construct(Command $command)
+    private function __construct(private Command $command)
     {
-        $this->command = $command;
     }
 
     /**

@@ -10,11 +10,8 @@ use Innmind\Immutable\Maybe;
  */
 final class Minutes
 {
-    private string $value;
-
-    private function __construct(string $value)
+    private function __construct(private string $value)
     {
-        $this->value = $value;
     }
 
     /**

@@ -20,24 +20,13 @@ use Innmind\Immutable\{
  */
 final class Schedule
 {
-    private Minutes $minutes;
-    private Hours $hours;
-    private DaysOfMonth $daysOfMonth;
-    private Months $months;
-    private DaysOfWeek $daysOfWeek;
-
     public function __construct(
-        Minutes $minutes,
-        Hours $hours,
-        DaysOfMonth $daysOfMonth,
-        Months $months,
-        DaysOfWeek $daysOfWeek,
+        private Minutes $minutes,
+        private Hours $hours,
+        private DaysOfMonth $daysOfMonth,
+        private Months $months,
+        private DaysOfWeek $daysOfWeek,
     ) {
-        $this->minutes = $minutes;
-        $this->hours = $hours;
-        $this->daysOfMonth = $daysOfMonth;
-        $this->months = $months;
-        $this->daysOfWeek = $daysOfWeek;
     }
 
     /**
