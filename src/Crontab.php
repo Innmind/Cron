@@ -41,6 +41,7 @@ final class Crontab
     /**
      * @return Attempt<SideEffect>
      */
+    #[\NoDiscard]
     public function __invoke(Server $server): Attempt
     {
         $installOn = Script::of($this->command);
@@ -52,6 +53,7 @@ final class Crontab
      * @no-named-arguments
      * @psalm-pure
      */
+    #[\NoDiscard]
     public static function forConnectedUser(Job ...$jobs): self
     {
         return new self(Command::foreground('crontab'), ...$jobs);
@@ -63,6 +65,7 @@ final class Crontab
      *
      * @param non-empty-string $user
      */
+    #[\NoDiscard]
     public static function forUser(string $user, Job ...$jobs): self
     {
         return new self(

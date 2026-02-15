@@ -24,6 +24,7 @@ final class Minutes
      *
      * @throws \DomainException
      */
+    #[\NoDiscard]
     public static function of(string $value): self
     {
         return self::maybe($value)->match(
@@ -37,6 +38,7 @@ final class Minutes
      *
      * @return Maybe<self>
      */
+    #[\NoDiscard]
     public static function maybe(string $value): Maybe
     {
         return Maybe::just($value)
@@ -47,6 +49,7 @@ final class Minutes
     /**
      * @psalm-pure
      */
+    #[\NoDiscard]
     public static function each(): self
     {
         return new self('*');
@@ -57,11 +60,13 @@ final class Minutes
      *
      * @param int<0, 59> $minute
      */
+    #[\NoDiscard]
     public static function at(int $minute): self
     {
         return new self((string) $minute);
     }
 
+    #[\NoDiscard]
     public function toString(): string
     {
         return $this->value;
