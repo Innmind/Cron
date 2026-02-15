@@ -20,24 +20,13 @@ use Innmind\Immutable\{
  */
 final class Schedule
 {
-    private Minutes $minutes;
-    private Hours $hours;
-    private DaysOfMonth $daysOfMonth;
-    private Months $months;
-    private DaysOfWeek $daysOfWeek;
-
     public function __construct(
-        Minutes $minutes,
-        Hours $hours,
-        DaysOfMonth $daysOfMonth,
-        Months $months,
-        DaysOfWeek $daysOfWeek,
+        private Minutes $minutes,
+        private Hours $hours,
+        private DaysOfMonth $daysOfMonth,
+        private Months $months,
+        private DaysOfWeek $daysOfWeek,
     ) {
-        $this->minutes = $minutes;
-        $this->hours = $hours;
-        $this->daysOfMonth = $daysOfMonth;
-        $this->months = $months;
-        $this->daysOfWeek = $daysOfWeek;
     }
 
     /**
@@ -47,6 +36,7 @@ final class Schedule
      *
      * @throws \DomainException
      */
+    #[\NoDiscard]
     public static function of(string $value): self
     {
         return self::maybe($value)->match(
@@ -60,6 +50,7 @@ final class Schedule
      *
      * @return Maybe<self>
      */
+    #[\NoDiscard]
     public static function maybe(string $value): Maybe
     {
         $parts = Str::of($value)->split(' ');
@@ -104,6 +95,7 @@ final class Schedule
     /**
      * @psalm-pure
      */
+    #[\NoDiscard]
     public static function everyMinute(): self
     {
         return new self(
@@ -120,6 +112,7 @@ final class Schedule
      *
      * @param int<0, 59> $minute
      */
+    #[\NoDiscard]
     public static function everyHourAt(int $minute): self
     {
         return new self(
@@ -137,6 +130,7 @@ final class Schedule
      * @param int<0, 23> $hour
      * @param int<0, 59> $minute
      */
+    #[\NoDiscard]
     public static function everyDayAt(int $hour, int $minute): self
     {
         return new self(
@@ -154,6 +148,7 @@ final class Schedule
      * @param int<0, 23> $hour
      * @param int<0, 59> $minute
      */
+    #[\NoDiscard]
     public static function everyMondayAt(int $hour, int $minute): self
     {
         return new self(
@@ -171,6 +166,7 @@ final class Schedule
      * @param int<0, 23> $hour
      * @param int<0, 59> $minute
      */
+    #[\NoDiscard]
     public static function everyTuesdayAt(int $hour, int $minute): self
     {
         return new self(
@@ -188,6 +184,7 @@ final class Schedule
      * @param int<0, 23> $hour
      * @param int<0, 59> $minute
      */
+    #[\NoDiscard]
     public static function everyWednesdayAt(int $hour, int $minute): self
     {
         return new self(
@@ -205,6 +202,7 @@ final class Schedule
      * @param int<0, 23> $hour
      * @param int<0, 59> $minute
      */
+    #[\NoDiscard]
     public static function everyThursdayAt(int $hour, int $minute): self
     {
         return new self(
@@ -222,6 +220,7 @@ final class Schedule
      * @param int<0, 23> $hour
      * @param int<0, 59> $minute
      */
+    #[\NoDiscard]
     public static function everyFridayAt(int $hour, int $minute): self
     {
         return new self(
@@ -239,6 +238,7 @@ final class Schedule
      * @param int<0, 23> $hour
      * @param int<0, 59> $minute
      */
+    #[\NoDiscard]
     public static function everySaturdayAt(int $hour, int $minute): self
     {
         return new self(
@@ -256,6 +256,7 @@ final class Schedule
      * @param int<0, 23> $hour
      * @param int<0, 59> $minute
      */
+    #[\NoDiscard]
     public static function everySundayAt(int $hour, int $minute): self
     {
         return new self(
@@ -267,6 +268,7 @@ final class Schedule
         );
     }
 
+    #[\NoDiscard]
     public function toString(): string
     {
         return \sprintf(

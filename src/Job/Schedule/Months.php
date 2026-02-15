@@ -10,11 +10,8 @@ use Innmind\Immutable\Maybe;
  */
 final class Months
 {
-    private string $value;
-
-    private function __construct(string $value)
+    private function __construct(private string $value)
     {
-        $this->value = $value;
     }
 
     /**
@@ -24,6 +21,7 @@ final class Months
      *
      * @throws \DomainException
      */
+    #[\NoDiscard]
     public static function of(string $value): self
     {
         return self::maybe($value)->match(
@@ -37,6 +35,7 @@ final class Months
      *
      * @return Maybe<self>
      */
+    #[\NoDiscard]
     public static function maybe(string $value): Maybe
     {
         return Maybe::just($value)
@@ -47,6 +46,7 @@ final class Months
     /**
      * @psalm-pure
      */
+    #[\NoDiscard]
     public static function each(): self
     {
         return new self('*');
@@ -57,11 +57,13 @@ final class Months
      *
      * @param int<1, 12> $month
      */
+    #[\NoDiscard]
     public static function at(int $month): self
     {
         return new self((string) $month);
     }
 
+    #[\NoDiscard]
     public function toString(): string
     {
         return $this->value;

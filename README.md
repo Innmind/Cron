@@ -1,6 +1,6 @@
 # Cron
 
-[![Build Status](https://github.com/innmind/cron/workflows/CI/badge.svg?branch=master)](https://github.com/innmind/cron/actions?query=workflow%3ACI)
+[![CI](https://github.com/Innmind/Cron/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/Innmind/Cron/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/innmind/cron/branch/develop/graph/badge.svg)](https://codecov.io/gh/innmind/cron)
 [![Type Coverage](https://shepherd.dev/github/innmind/cron/coverage.svg)](https://shepherd.dev/github/innmind/cron)
 

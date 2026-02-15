@@ -10,22 +10,19 @@ use Innmind\Server\Control\{
 use Innmind\Immutable\{
     Sequence,
     Attempt,
-    Maybe,
     Monoid\Concat,
 };
 
 final class Read
 {
-    private Command $command;
-
-    private function __construct(Command $command)
+    private function __construct(private Command $command)
     {
-        $this->command = $command;
     }
 
     /**
      * @return Attempt<Sequence<Job>>
      */
+    #[\NoDiscard]
     public function __invoke(Server $server): Attempt
     {
         return $server
@@ -40,25 +37,15 @@ final class Read
                 static fn($success) => $success
                     ->output()
                     ->map(static fn($chunk) => $chunk->data())
-                    ->fold(new Concat)
+                    ->fold(Concat::monoid)
                     ->split("\n")
                     ->filter(static fn($line) => !$line->startsWith('#') && !$line->trim()->empty())
                     ->map(static fn($line) => Job::attempt($line->toString())),
             )
             ->flatMap(self::parse(...));
-
-        /**
-         * @psalm-suppress NamedArgumentNotAllowed
-         * @var Maybe<Sequence<Job>>
-         */
-        return $jobs->match(
-            static fn($first, $jobs) => Maybe::all($first, ...$jobs->toList())->map(
-                static fn(Job ...$jobs) => Sequence::of(...$jobs),
-            ),
-            static fn() => Maybe::just(Sequence::of()),
-        );
     }
 
+    #[\NoDiscard]
     public static function forConnectedUser(): self
     {
         return new self(
@@ -70,6 +57,7 @@ final class Read
     /**
      * @param non-empty-string $user
      */
+    #[\NoDiscard]
     public static function forUser(string $user): self
     {
         return new self(

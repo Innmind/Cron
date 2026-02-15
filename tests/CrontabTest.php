@@ -7,8 +7,14 @@ use Innmind\Cron\{
     Crontab,
     Job,
 };
-use Innmind\Server\Control\Servers\Mock;
-use Innmind\Immutable\SideEffect;
+use Innmind\Server\Control\{
+    Server,
+    Server\Process\Builder,
+};
+use Innmind\Immutable\{
+    Attempt,
+    SideEffect,
+};
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class CrontabTest extends TestCase
@@ -16,13 +22,16 @@ class CrontabTest extends TestCase
     public function testInstallEmptyCrontabForConnectedUser()
     {
         $crontab = Crontab::forConnectedUser();
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "crontab '-r'",
                     $command->toString(),
-                ),
-            );
+                );
+
+                return Attempt::result(Builder::foreground(2)->build());
+            },
+        );
 
         $this->assertInstanceOf(SideEffect::class, $crontab($server)->unwrap());
     }
@@ -30,13 +39,16 @@ class CrontabTest extends TestCase
     public function testInstallEmptyCrontabForSpecificUser()
     {
         $crontab = Crontab::forUser('admin');
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "crontab '-u' 'admin' '-r'",
                     $command->toString(),
-                ),
-            );
+                );
+
+                return Attempt::result(Builder::foreground(2)->build());
+            },
+        );
 
         $this->assertInstanceOf(SideEffect::class, $crontab($server)->unwrap());
     }
@@ -47,13 +59,16 @@ class CrontabTest extends TestCase
             Job::of('1 2 3 4 5 echo foo'),
             Job::of('2 3 4 5 6 echo bar'),
         );
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
-                    "echo '1 2 3 4 5 echo foo\n2 3 4 5 6 echo bar' | 'crontab'",
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
+                    "echo '1 2 3 4 5 echo foo\n2 3 4 5 6 echo bar' | crontab",
                     $command->toString(),
-                ),
-            );
+                );
+
+                return Attempt::result(Builder::foreground(2)->build());
+            },
+        );
 
         $this->assertInstanceOf(SideEffect::class, $crontab($server)->unwrap());
     }
@@ -65,13 +80,16 @@ class CrontabTest extends TestCase
             Job::of('1 2 3 4 5 echo foo'),
             Job::of('2 3 4 5 6 echo bar'),
         );
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
-                    "echo '1 2 3 4 5 echo foo\n2 3 4 5 6 echo bar' | 'crontab' '-u' 'admin'",
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
+                    "echo '1 2 3 4 5 echo foo\n2 3 4 5 6 echo bar' | crontab '-u' 'admin'",
                     $command->toString(),
-                ),
-            );
+                );
+
+                return Attempt::result(Builder::foreground(2)->build());
+            },
+        );
 
         $this->assertInstanceOf(SideEffect::class, $crontab($server)->unwrap());
     }
@@ -83,11 +101,13 @@ class CrontabTest extends TestCase
             Job::of('1 2 3 4 5 echo foo'),
             Job::of('2 3 4 5 6 echo bar'),
         );
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                static fn() => null,
-                static fn($_, $builder) => $builder->failed(),
-            );
+        $server = Server::via(
+            static fn() => Attempt::result(
+                Builder::foreground(2)
+                    ->failed()
+                    ->build(),
+            ),
+        );
 
         $error = $crontab($server)->match(
             static fn() => null,

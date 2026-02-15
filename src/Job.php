@@ -16,13 +16,10 @@ use Innmind\Immutable\{
  */
 final class Job
 {
-    private Schedule $schedule;
-    private Command $command;
-
-    public function __construct(Schedule $schedule, Command $command)
-    {
-        $this->schedule = $schedule;
-        $this->command = $command;
+    public function __construct(
+        private Schedule $schedule,
+        private Command $command,
+    ) {
     }
 
     /**
@@ -32,6 +29,7 @@ final class Job
      *
      * @throws \DomainException
      */
+    #[\NoDiscard]
     public static function of(string $value): self
     {
         return self::attempt($value)->unwrap();
@@ -42,6 +40,7 @@ final class Job
      *
      * @return Maybe<self>
      */
+    #[\NoDiscard]
     public static function maybe(string $value): Maybe
     {
         return self::attempt($value)->maybe();
@@ -52,6 +51,7 @@ final class Job
      *
      * @return Attempt<self>
      */
+    #[\NoDiscard]
     public static function attempt(string $value): Attempt
     {
         $parts = Str::of($value)
@@ -78,6 +78,7 @@ final class Job
             )));
     }
 
+    #[\NoDiscard]
     public function toString(): string
     {
         $command = $this->command->environment()->reduce(

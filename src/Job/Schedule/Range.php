@@ -11,13 +11,11 @@ use Innmind\Immutable\Str;
  */
 final class Range
 {
-    private string $pattern;
-
-    public function __construct(string $pattern)
+    public function __construct(private string $pattern)
     {
-        $this->pattern = $pattern;
     }
 
+    #[\NoDiscard]
     public function __invoke(string $value): bool
     {
         if ($value === '*') {
