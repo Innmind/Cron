@@ -15,8 +15,8 @@
         "issues": "http://github.com/Innmind/Cron/issues"
     },
     "require": {
-        "php": "~8.2",
-        "innmind/foundation": "~1.5"
+        "php": "~8.4",
+        "innmind/foundation": "~2.1"
     },
     "autoload": {
         "psr-4": {
@@ -29,11 +29,8 @@
         }
     },
     "require-dev": {
-        "innmind/static-analysis": "^1.2.1",
+        "innmind/static-analysis": "~1.3",
         "innmind/black-box": "~6.5",
         "innmind/coding-standard": "~2.0"
-    },
-    "suggest": {
-        "innmind/operating-system": "To easily access to a machine control mechanism"
     }
 }
