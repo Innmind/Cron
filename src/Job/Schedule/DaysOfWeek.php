@@ -24,6 +24,7 @@ final class DaysOfWeek
      *
      * @throws \DomainException
      */
+    #[\NoDiscard]
     public static function of(string $value): self
     {
         return self::maybe($value)->match(
@@ -37,6 +38,7 @@ final class DaysOfWeek
      *
      * @return Maybe<self>
      */
+    #[\NoDiscard]
     public static function maybe(string $value): Maybe
     {
         return Maybe::just($value)
@@ -47,6 +49,7 @@ final class DaysOfWeek
     /**
      * @psalm-pure
      */
+    #[\NoDiscard]
     public static function each(): self
     {
         return new self('*');
@@ -57,11 +60,13 @@ final class DaysOfWeek
      *
      * @param int<0, 6> $day
      */
+    #[\NoDiscard]
     public static function at(int $day): self
     {
         return new self((string) $day);
     }
 
+    #[\NoDiscard]
     public function toString(): string
     {
         return $this->value;

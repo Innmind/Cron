@@ -18,6 +18,7 @@ final class Range
         $this->pattern = $pattern;
     }
 
+    #[\NoDiscard]
     public function __invoke(string $value): bool
     {
         if ($value === '*') {

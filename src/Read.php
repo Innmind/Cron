@@ -26,6 +26,7 @@ final class Read
     /**
      * @return Attempt<Sequence<Job>>
      */
+    #[\NoDiscard]
     public function __invoke(Server $server): Attempt
     {
         return $server
@@ -59,6 +60,7 @@ final class Read
         );
     }
 
+    #[\NoDiscard]
     public static function forConnectedUser(): self
     {
         return new self(
@@ -70,6 +72,7 @@ final class Read
     /**
      * @param non-empty-string $user
      */
+    #[\NoDiscard]
     public static function forUser(string $user): self
     {
         return new self(

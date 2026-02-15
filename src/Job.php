@@ -32,6 +32,7 @@ final class Job
      *
      * @throws \DomainException
      */
+    #[\NoDiscard]
     public static function of(string $value): self
     {
         return self::attempt($value)->unwrap();
@@ -42,6 +43,7 @@ final class Job
      *
      * @return Maybe<self>
      */
+    #[\NoDiscard]
     public static function maybe(string $value): Maybe
     {
         return self::attempt($value)->maybe();
@@ -52,6 +54,7 @@ final class Job
      *
      * @return Attempt<self>
      */
+    #[\NoDiscard]
     public static function attempt(string $value): Attempt
     {
         $parts = Str::of($value)
@@ -78,6 +81,7 @@ final class Job
             )));
     }
 
+    #[\NoDiscard]
     public function toString(): string
     {
         $command = $this->command->environment()->reduce(
