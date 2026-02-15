@@ -4,8 +4,14 @@ declare(strict_types = 1);
 namespace Tests\Innmind\Cron;
 
 use Innmind\Cron\Read;
-use Innmind\Server\Control\Servers\Mock;
-use Innmind\Immutable\Sequence;
+use Innmind\Server\Control\{
+    Server,
+    Server\Process\Builder,
+};
+use Innmind\Immutable\{
+    Sequence,
+    Attempt,
+};
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class ReadTest extends TestCase
@@ -13,26 +19,32 @@ class ReadTest extends TestCase
     public function testReadCrontabForConnectedUser()
     {
         $read = Read::forConnectedUser();
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "crontab '-l'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->success([
-                    [
-                        <<<CRONTAB
-                        # First section
-                        1 2 3 4 5 echo foo
+                );
 
-                        # Second section
-                        2 3 4 5 6 echo bar
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->success([
+                            [
+                                <<<CRONTAB
+                                # First section
+                                1 2 3 4 5 echo foo
 
-                        CRONTAB,
-                        'output',
-                    ],
-                ]),
-            );
+                                # Second section
+                                2 3 4 5 6 echo bar
+
+                                CRONTAB,
+                                'output',
+                            ],
+                        ])
+                        ->build(),
+                );
+            },
+        );
 
         $jobs = $read($server)->match(
             static fn($jobs) => $jobs,
@@ -40,7 +52,7 @@ class ReadTest extends TestCase
         );
 
         $this->assertInstanceOf(Sequence::class, $jobs);
-        $this->assertCount(2, $jobs);
+        $this->assertSame(2, $jobs->size());
         $this->assertSame('1 2 3 4 5 echo foo', $jobs->first()->match(
             static fn($job) => $job->toString(),
             static fn() => null,
@@ -54,26 +66,32 @@ class ReadTest extends TestCase
     public function testReadCrontabForSpecificUser()
     {
         $read = Read::forUser('admin');
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "crontab '-u' 'admin' '-l'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->success([
-                    [
-                        <<<CRONTAB
-                        # First section
-                        1 2 3 4 5 echo foo
+                );
 
-                        # Second section
-                        2 3 4 5 6 echo bar
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->success([
+                            [
+                                <<<CRONTAB
+                                # First section
+                                1 2 3 4 5 echo foo
 
-                        CRONTAB,
-                        'output',
-                    ],
-                ]),
-            );
+                                # Second section
+                                2 3 4 5 6 echo bar
+
+                                CRONTAB,
+                                'output',
+                            ],
+                        ])
+                        ->build(),
+                );
+            },
+        );
 
         $jobs = $read($server)->match(
             static fn($jobs) => $jobs,
@@ -81,7 +99,7 @@ class ReadTest extends TestCase
         );
 
         $this->assertInstanceOf(Sequence::class, $jobs);
-        $this->assertCount(2, $jobs);
+        $this->assertSame(2, $jobs->size());
         $this->assertSame('1 2 3 4 5 echo foo', $jobs->first()->match(
             static fn($job) => $job->toString(),
             static fn() => null,
@@ -95,16 +113,20 @@ class ReadTest extends TestCase
     public function testReturnNothingWhenCrontabContainsInvalidJobs()
     {
         $read = Read::forUser('admin');
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "crontab '-u' 'admin' '-l'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->success([
-                    ['*', 'output'],
-                ]),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->success([['*', 'output']])
+                        ->build(),
+                );
+            },
+        );
 
         $this->assertNull($read($server)->match(
             static fn($jobs) => $jobs,
@@ -115,14 +137,20 @@ class ReadTest extends TestCase
     public function testReturnNothingWhenProcessToReadTheCrontabFailed()
     {
         $read = Read::forUser('admin');
-        $server = Mock::new($this->assert())
-            ->willExecute(
-                fn($command) => $this->assertSame(
+        $server = Server::via(
+            function($command) {
+                $this->assertSame(
                     "crontab '-u' 'admin' '-l'",
                     $command->toString(),
-                ),
-                static fn($_, $builder) => $builder->failed(),
-            );
+                );
+
+                return Attempt::result(
+                    Builder::foreground(2)
+                        ->failed()
+                        ->build(),
+                );
+            },
+        );
 
         $this->assertNull($read($server)->match(
             static fn($jobs) => $jobs,

@@ -40,7 +40,7 @@ final class Read
                 static fn($success) => $success
                     ->output()
                     ->map(static fn($chunk) => $chunk->data())
-                    ->fold(new Concat)
+                    ->fold(Concat::monoid)
                     ->split("\n")
                     ->filter(static fn($line) => !$line->startsWith('#') && !$line->trim()->empty())
                     ->map(static fn($line) => Job::attempt($line->toString())),
