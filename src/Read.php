@@ -10,17 +10,13 @@ use Innmind\Server\Control\{
 use Innmind\Immutable\{
     Sequence,
     Attempt,
-    Maybe,
     Monoid\Concat,
 };
 
 final class Read
 {
-    private Command $command;
-
-    private function __construct(Command $command)
+    private function __construct(private Command $command)
     {
-        $this->command = $command;
     }
 
     /**
@@ -47,17 +43,6 @@ final class Read
                     ->map(static fn($line) => Job::attempt($line->toString())),
             )
             ->flatMap(self::parse(...));
-
-        /**
-         * @psalm-suppress NamedArgumentNotAllowed
-         * @var Maybe<Sequence<Job>>
-         */
-        return $jobs->match(
-            static fn($first, $jobs) => Maybe::all($first, ...$jobs->toList())->map(
-                static fn(Job ...$jobs) => Sequence::of(...$jobs),
-            ),
-            static fn() => Maybe::just(Sequence::of()),
-        );
     }
 
     #[\NoDiscard]

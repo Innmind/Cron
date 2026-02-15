@@ -16,13 +16,10 @@ use Innmind\Immutable\{
  */
 final class Job
 {
-    private Schedule $schedule;
-    private Command $command;
-
-    public function __construct(Schedule $schedule, Command $command)
-    {
-        $this->schedule = $schedule;
-        $this->command = $command;
+    public function __construct(
+        private Schedule $schedule,
+        private Command $command,
+    ) {
     }
 
     /**
